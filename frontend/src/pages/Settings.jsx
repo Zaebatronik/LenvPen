@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import WebApp from '@twa-dev/sdk';
 import { useStore } from '../store/useStore';
 import { APP_VERSION } from '../config/version';
+import { HUMOR_TYPES, getRandomHumor } from '../utils/slothBehavior';
 
 function Settings() {
   const navigate = useNavigate();
   const { user, setUser } = useStore();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [currentJoke, setCurrentJoke] = useState('');
 
   const handleDeleteAccount = async () => {
     setDeleteLoading(true);
@@ -98,6 +100,47 @@ function Settings() {
                 </span>
               </p>
             )}
+          </div>
+        </div>
+
+        {/* БЛОК F: Юмор ленивца */}
+        <div className="card space-y-3 bg-gradient-to-br from-lenvpen-orange/10 to-lenvpen-red/10 border border-lenvpen-orange/20">
+          <h2 className="text-lg font-bold text-lenvpen-orange flex items-center gap-2">
+            <span>😄</span> Чувство юмора ленивца
+          </h2>
+          <p className="text-lenvpen-muted text-sm">
+            Ленивец знает 4 типа юмора. Нажми на кнопку, чтобы услышать случайную шутку!
+          </p>
+          {currentJoke && (
+            <div className="bg-lenvpen-dark/50 rounded-lg p-4 border-l-4 border-lenvpen-orange">
+              <p className="text-lenvpen-text italic">"{currentJoke}"</p>
+            </div>
+          )}
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => setCurrentJoke(getRandomHumor('SITUATIONAL'))}
+              className="p-3 bg-lenvpen-bg rounded-lg text-lenvpen-text hover:bg-lenvpen-orange/20 transition-colors border border-lenvpen-orange/30"
+            >
+              🎭 Ситуационный
+            </button>
+            <button
+              onClick={() => setCurrentJoke(getRandomHumor('MEME'))}
+              className="p-3 bg-lenvpen-bg rounded-lg text-lenvpen-text hover:bg-lenvpen-orange/20 transition-colors border border-lenvpen-orange/30"
+            >
+              🤡 Мемный
+            </button>
+            <button
+              onClick={() => setCurrentJoke(getRandomHumor('OBSERVATIONAL'))}
+              className="p-3 bg-lenvpen-bg rounded-lg text-lenvpen-text hover:bg-lenvpen-orange/20 transition-colors border border-lenvpen-orange/30"
+            >
+              👀 Наблюдательный
+            </button>
+            <button
+              onClick={() => setCurrentJoke(getRandomHumor('SARCASM'))}
+              className="p-3 bg-lenvpen-bg rounded-lg text-lenvpen-text hover:bg-lenvpen-orange/20 transition-colors border border-lenvpen-orange/30"
+            >
+              😏 Сарказм
+            </button>
           </div>
         </div>
 

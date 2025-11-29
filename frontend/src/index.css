@@ -59,6 +59,76 @@ body {
   animation: float 3s ease-in-out infinite;
 }
 
+/* БЛОК F: Анимации реакций ленивца */
+@keyframes sloth-jump {
+  0%, 100% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-20px) scale(1.1); }
+  60% { transform: translateY(-10px) scale(1.05); }
+}
+
+@keyframes sloth-lie-down {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(-15deg) scale(0.95); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+@keyframes sloth-wave {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(10deg); }
+  75% { transform: rotate(-10deg); }
+}
+
+@keyframes sloth-sunglasses {
+  0% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.1); filter: brightness(1.2); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+@keyframes sloth-victory {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.2) rotate(-5deg); }
+  50% { transform: scale(1.1) rotate(5deg); }
+  75% { transform: scale(1.15) rotate(-5deg); }
+}
+
+.sloth-animation-jump {
+  animation: sloth-jump 0.6s ease-in-out;
+}
+
+.sloth-animation-lie-down {
+  animation: sloth-lie-down 1s ease-in-out;
+}
+
+.sloth-animation-wave {
+  animation: sloth-wave 0.5s ease-in-out 3;
+}
+
+.sloth-animation-sunglasses {
+  animation: sloth-sunglasses 0.8s ease-in-out;
+}
+
+.sloth-animation-victory {
+  animation: sloth-victory 0.7s ease-in-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 /* Скроллбар */
 ::-webkit-scrollbar {
   width: 8px;

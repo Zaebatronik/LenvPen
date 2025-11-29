@@ -322,6 +322,15 @@ export function getRandomNudge() {
   return SOFT_NUDGES[Math.floor(Math.random() * SOFT_NUDGES.length)];
 }
 
+/**
+ * Получить случайную шутку по типу юмора
+ */
+export function getRandomHumor(type) {
+  const jokes = HUMOR_TYPES[type];
+  if (!jokes) return 'Я забыл, что хотел сказать.';
+  return jokes[Math.floor(Math.random() * jokes.length)];
+}
+
 export default {
   determineTone,
   getPhraseByTone,
@@ -330,6 +339,7 @@ export default {
   checkAchievements,
   getRandomBubble,
   getRandomNudge,
+  getRandomHumor,
   TONE_TYPES,
   HUMOR_TYPES,
   SLOTH_REACTIONS,

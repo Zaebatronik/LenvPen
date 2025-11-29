@@ -12,6 +12,7 @@ import {
   getReactionForAction,
   getDayRating
 } from '../utils/slothReactions';
+import { getReactionForEvent } from '../utils/slothBehavior';
 
 function DailyTasks() {
   const navigate = useNavigate();
@@ -23,6 +24,10 @@ function DailyTasks() {
   const [slothReaction, setSlothReaction] = useState('Загружаюсь… или отдыхаю. Не понял сам.');
   const [totalPoints, setTotalPoints] = useState(0);
   const [showDayEndSummary, setShowDayEndSummary] = useState(false);
+  
+  // Block F: Реакции с анимациями
+  const [showReaction, setShowReaction] = useState(false);
+  const [reactionData, setReactionData] = useState(null);
   
   useEffect(() => {
     initializeDay();
@@ -101,7 +106,7 @@ function DailyTasks() {
     setTasks(updatedTasks);
     setTotalPoints(prev => prev + points);
     
-    // Реакция ленивца
+    // Реакция ленивца (старая система)
     let reaction = '';
     if (status === 'completed') {
       reaction = getReactionForAction('completed');
@@ -114,6 +119,19 @@ function DailyTasks() {
     }
     
     setSlothReaction(reaction);
+    
+    // БЛОК F: Новая система реакций с анимациями
+    if (status === 'completed') {
+      const blockFReaction = getReactionForEvent('TASK_COMPLETED');
+      setReactionData(blockFReaction);
+      setShowReaction(true);
+      setTimeout(() => setShowReaction(false), 3000);
+    } else if (status === 'skipped') {
+      const blockFReaction = getReactionForEvent('TASK_POSTPONED');
+      setReactionData(blockFReaction);
+      setShowReaction(true);
+      setTimeout(() => setShowReaction(false), 3000);
+    }
     
     // Сохраняем изменения
     const today = new Date().toDateString();
@@ -417,6 +435,21 @@ function DailyTasks() {
       <div className="fixed bottom-4 left-0 right-0 text-center">
         <span className="text-lenvpen-text/40 text-xs font-medium">v{APP_VERSION}</span>
       </div>
+      
+      {/* БЛОК F: Модальное окно реакций ленивца */}
+      {showReaction && reactionData && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-lenvpen-card rounded-2xl p-8 max-w-sm mx-4 text-center space-y-4 animate-scale-in shadow-2xl border-2 border-lenvpen-orange">
+            <div className={`text-8xl sloth-animation-${reactionData.animation}`}>
+              {reactionData.emoji}
+            </div>
+            <p className="text-xl text-lenvpen-text font-semibold italic">
+              "{reactionData.phrase}"
+            </p>
+          </div>
+        </div>
+      )}
+      
     </div>
   );
 }
