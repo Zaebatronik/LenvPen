@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import { APP_VERSION } from '../config/version';
+import { determineTone, getPhraseByTone, getReactionForEvent, checkAchievements, getRandomBubble } from '../utils/slothBehavior';
+import BubbleNotification from '../components/BubbleNotification';
+import AchievementManager from '../components/AchievementManager';
 
 // Система ленивца с 6 стадиями (Block C)
 const SLOTH_STAGES = [
@@ -21,6 +24,11 @@ function DashboardClean() {
   const [progress, setProgress] = useState(0);
   const [dependencies, setDependencies] = useState([]);
   const [slothComment, setSlothComment] = useState('');
+  
+  // Block F: Уведомления и достижения
+  const [showBubble, setShowBubble] = useState(false);
+  const [bubbleMessage, setBubbleMessage] = useState('');
+  const [newAchievements, setNewAchievements] = useState([]);
 
   useEffect(() => {
     if (!user?.telegram_id) {
@@ -47,8 +55,50 @@ function DashboardClean() {
       const deps = surveyData.dependencies || [];
       setDependencies(deps);
       
-      const stage = getSlothStage(calculatedProgress);
-      setSlothComment(stage.text);
+      // БЛОК F: Определяем состояние пользователя
+      const lastVisit = localStorage.getItem(`lenvpen_last_visit_${user.telegram_id}`);
+      const now = new Date();
+      const daysInactive = lastVisit ? Math.floor((now - new Date(lastVisit)) / (1000 * 60 * 60 * 24)) : 0;
+      
+      const today = new Date().toDateString();
+      const todayTasks = JSON.parse(localStorage.getItem(`lenvpen_daily_tasks_${user.telegram_id}_${today}`) || '{}');
+      const tasksCompletedToday = todayTasks.completed || 0;
+      
+      const streakData = JSON.parse(localStorage.getItem(`lenvpen_streak_${user.telegram_id}`) || '{"count": 0}');
+      
+      const userData = {
+        progress: calculatedProgress,
+        daysInactive,
+        tasksCompletedToday,
+        streak: streakData.count || 0
+      };
+      
+      // Определяем тон и получаем фразу
+      const tone = determineTone(userData);
+      const smartPhrase = getPhraseByTone(tone);
+      
+      setSlothComment(smartPhrase);
+      
+      // БЛОК F: Проверяем достижения
+      const unlockedAchievements = localStorage.getItem(`lenvpen_achievements_${user.telegram_id}`);
+      const previousAchievements = unlockedAchievements ? JSON.parse(unlockedAchievements) : [];
+      const newlyUnlocked = checkAchievements(userData, previousAchievements);
+      
+      if (newlyUnlocked.length > 0) {
+        const updated = [...previousAchievements, ...newlyUnlocked.map(a => a.id)];
+        localStorage.setItem(`lenvpen_achievements_${user.telegram_id}`, JSON.stringify(updated));
+        setNewAchievements(newlyUnlocked);
+      }
+      
+      // БЛОК F: Показываем бабл через 2 секунды
+      setTimeout(() => {
+        const bubble = getRandomBubble();
+        setBubbleMessage(bubble);
+        setShowBubble(true);
+      }, 2000);
+      
+      // Сохраняем время визита
+      localStorage.setItem(`lenvpen_last_visit_${user.telegram_id}`, now.toISOString());
       
       setLoading(false);
     } catch (error) {
@@ -182,6 +232,16 @@ function DashboardClean() {
       <div className="text-center py-2">
         <span className="text-lenvpen-text/30 text-xs">v{APP_VERSION}</span>
       </div>
+      
+      {/* БЛОК F: Бабл-уведомления */}
+      <BubbleNotification 
+        show={showBubble}
+        message={bubbleMessage}
+        onClose={() => setShowBubble(false)}
+      />
+      
+      {/* БЛОК F: Достижения */}
+      <AchievementManager achievements={newAchievements} />
       
     </div>
   );
