@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import texts from '../locales/ru.json';
+import { APP_VERSION } from '../config/version';
 
 function RegistrationSuccess() {
   const navigate = useNavigate();

@@ -129,6 +129,11 @@ function Dashboard() {
           )}
         </div>
       </div>
+      
+      {/* Версия */}
+      <div className="fixed bottom-4 right-4 text-lenvpen-text/40 text-sm">
+        v{APP_VERSION}
+      </div>
     </div>
   );
 }

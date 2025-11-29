@@ -4,6 +4,7 @@ import { useStore } from '../store/useStore';
 import { apiClient } from '../services/api';
 import { USER_STATUSES, DEPENDENCIES } from '../config/constants';
 import texts from '../locales/ru.json';
+import { APP_VERSION } from '../config/version';
 
 function Survey() {
   const navigate = useNavigate();
@@ -217,6 +218,11 @@ function Survey() {
             </div>
           </div>
         )}
+      </div>
+      
+      {/* Версия */}
+      <div className="fixed bottom-4 right-4 text-lenvpen-text/40 text-sm">
+        v{APP_VERSION}
       </div>
     </div>
   );
