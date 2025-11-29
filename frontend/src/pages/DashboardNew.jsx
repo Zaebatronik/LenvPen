@@ -552,9 +552,9 @@ function DashboardNew() {
               <span className="text-2xl">📊</span>
               <span className="text-xs">Путь</span>
             </button>
-            <button className="flex flex-col items-center gap-1 text-lenvpen-muted hover:text-lenvpen-orange transition-colors" onClick={() => navigate('/daily-report')}>
-              <span className="text-2xl">📝</span>
-              <span className="text-xs">Отчёт</span>
+            <button className="flex flex-col items-center gap-1 text-lenvpen-muted hover:text-lenvpen-orange transition-colors" onClick={() => navigate('/daily-tasks')}>
+              <span className="text-2xl">✅</span>
+              <span className="text-xs">Задания</span>
             </button>
             <button className="flex flex-col items-center gap-1 text-lenvpen-muted hover:text-lenvpen-orange transition-colors" onClick={() => navigate('/settings')}>
               <span className="text-2xl">⚙️</span>
