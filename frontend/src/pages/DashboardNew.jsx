@@ -314,52 +314,108 @@ function DashboardNew() {
       onMouseMove={handleActivity}
       onTouchStart={handleActivity}
     >
-      <div className="max-w-2xl mx-auto space-y-4">
+      <div className="max-w-2xl mx-auto space-y-6">
         
-        {/* Аватар ленивца с состоянием (Block C) */}
-        <div className="bg-lenvpen-card/80 backdrop-blur-sm rounded-3xl p-6 border-2 border-lenvpen-orange/30 relative overflow-hidden">
-          {/* Декоративный фон */}
-          <div className="absolute top-0 right-0 w-40 h-40 bg-lenvpen-orange/10 rounded-full blur-3xl"></div>
+        {/* ═══════════════════════════════════════════════════
+            ЦЕНТРАЛЬНЫЙ ЛЕНИВЕЦ - ГЛАВНЫЙ ГЕРОЙ СТРАНИЦЫ (Block C)
+            Огромный, анимированный, с круговым прогрессом
+            ═══════════════════════════════════════════════════ */}
+        <div className="relative min-h-[400px]">
+          {/* Декоративный анимированный фон */}
+          <div className="absolute inset-0 bg-gradient-to-br from-lenvpen-orange/5 via-transparent to-lenvpen-red/5 rounded-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-lenvpen-orange/10 rounded-full blur-3xl animate-pulse"></div>
           
-          <div className="relative z-10">
-            {/* Прогресс и аватар */}
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <div className="text-sm text-lenvpen-muted">Общий прогресс</div>
-                <div className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-lenvpen-orange to-lenvpen-red">
-                  {Math.round(progress)}%
+          <div className="bg-gradient-to-br from-lenvpen-card/80 via-lenvpen-card/60 to-lenvpen-bg/80 backdrop-blur-md rounded-3xl p-8 border-2 border-lenvpen-orange/30 relative overflow-hidden shadow-2xl">
+            <div className="relative z-10 space-y-6">
+              
+              {/* Огромный центральный ленивец с SVG круговым прогрессом */}
+              <div className="flex flex-col items-center justify-center py-4">
+                <div className="relative flex items-center justify-center">
+                  {/* SVG круговой прогресс-бар */}
+                  <svg className="absolute w-56 h-56 sm:w-64 sm:h-64 -rotate-90" viewBox="0 0 200 200">
+                    {/* Фоновая окружность */}
+                    <circle
+                      cx="100"
+                      cy="100"
+                      r="90"
+                      stroke="rgba(249, 115, 22, 0.1)"
+                      strokeWidth="10"
+                      fill="none"
+                    />
+                    {/* Прогресс окружность с градиентом */}
+                    <circle
+                      cx="100"
+                      cy="100"
+                      r="90"
+                      stroke="url(#circleGradient)"
+                      strokeWidth="10"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeDasharray={`${2 * Math.PI * 90}`}
+                      strokeDashoffset={`${2 * Math.PI * 90 * (1 - progress / 100)}`}
+                      className="transition-all duration-1000 ease-out"
+                    />
+                    <defs>
+                      <linearGradient id="circleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#f97316" />
+                        <stop offset="50%" stopColor="#ef4444" />
+                        <stop offset="100%" stopColor="#f97316" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  
+                  {/* Центральный аватар ленивца - ОГРОМНЫЙ */}
+                  <div className="w-56 h-56 sm:w-64 sm:h-64 rounded-full bg-gradient-to-br from-lenvpen-orange/20 via-lenvpen-card/80 to-lenvpen-red/20 border-4 border-lenvpen-orange/50 flex items-center justify-center shadow-2xl shadow-lenvpen-orange/40 relative overflow-hidden">
+                    {/* Внутреннее свечение */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-lenvpen-orange/10 to-transparent"></div>
+                    
+                    {/* Ленивец - анимированный */}
+                    <span className="text-9xl sm:text-[10rem] animate-float relative z-10">{currentStage.emoji}</span>
+                    
+                    {/* Бейдж уровня внизу */}
+                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-lenvpen-orange via-lenvpen-red to-lenvpen-orange px-6 py-2 rounded-full border-2 border-lenvpen-card shadow-xl">
+                      <span className="text-sm font-black text-white uppercase tracking-wider">
+                        Уровень {currentStage.level}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Процент прогресса - ОГРОМНЫЙ */}
+                <div className="mt-10 text-center">
+                  <div className="text-7xl sm:text-8xl font-black bg-gradient-to-r from-lenvpen-orange via-lenvpen-red to-lenvpen-orange bg-clip-text text-transparent animate-pulse">
+                    {Math.round(progress)}%
+                  </div>
+                  <div className="text-sm text-lenvpen-muted uppercase tracking-widest mt-2 font-semibold">
+                    Общий прогресс
+                  </div>
                 </div>
               </div>
               
-              {/* Круглый аватар ленивца */}
-              <div className="relative">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-lenvpen-orange/30 to-lenvpen-red/30 border-4 border-lenvpen-orange flex items-center justify-center shadow-2xl">
-                  <span className="text-6xl">{currentStage.emoji}</span>
-                </div>
-                <div className="absolute -bottom-1 -right-1 bg-lenvpen-card px-2 py-1 rounded-full border border-lenvpen-orange/50">
-                  <span className="text-xs text-lenvpen-orange font-bold">Lv.{currentStage.level}</span>
+              {/* Речевой пузырь с комментарием ленивца */}
+              <div className="relative mt-6">
+                {/* Треугольник пузыря */}
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-b-[18px] border-b-lenvpen-orange/60"></div>
+                
+                <div className="bg-gradient-to-br from-lenvpen-orange/15 via-lenvpen-card/50 to-lenvpen-red/15 backdrop-blur-sm rounded-2xl p-6 border-2 border-lenvpen-orange/50 shadow-xl">
+                  <p className="text-lenvpen-text text-center text-base sm:text-lg font-medium italic leading-relaxed">
+                    💬 "{slothComment || currentStage.text}"
+                  </p>
                 </div>
               </div>
-            </div>
-            
-            {/* Прогресс-бар */}
-            <div className="h-3 bg-lenvpen-bg rounded-full overflow-hidden mb-3">
-              <div 
-                className="h-full bg-gradient-to-r from-lenvpen-orange via-lenvpen-red to-lenvpen-orange rounded-full transition-all duration-1000"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            
-            {/* Комментарий ленивца (речевой пузырь) */}
-            <div className="bg-lenvpen-bg/80 rounded-2xl p-4 relative">
-              <div className="absolute -top-2 left-8 w-4 h-4 bg-lenvpen-bg/80 rotate-45"></div>
-              <p className="text-lenvpen-text text-center italic">
-                "{slothComment || currentStage.text}"
-              </p>
-            </div>
-            
-            <div className="text-center text-xs text-lenvpen-muted mt-2">
-              {currentStage.description}
+              
+              {/* Название стадии и описание */}
+              <div className="text-center space-y-3 pt-2">
+                <div className="inline-flex items-center gap-2 bg-lenvpen-orange/20 px-6 py-2 rounded-full border border-lenvpen-orange/50 shadow-lg">
+                  <span className="text-lenvpen-orange font-bold text-sm uppercase tracking-wider">
+                    {currentStage.pose.replace(/-/g, ' ')}
+                  </span>
+                </div>
+                <div className="text-xs sm:text-sm text-lenvpen-muted italic">
+                  {currentStage.description}
+                </div>
+              </div>
+              
             </div>
           </div>
         </div>
