@@ -11,6 +11,7 @@ import RegistrationSuccess from './pages/RegistrationSuccess';
 import Survey from './pages/Survey';
 import SurveyNew from './pages/SurveyNew';
 import Dashboard from './pages/Dashboard';
+import DashboardNew from './pages/DashboardNew';
 import DailyReport from './pages/DailyReport';
 
 // Import services
@@ -196,7 +197,8 @@ function App() {
         <Route path="/registration-success" element={<RegistrationSuccess />} />
         <Route path="/survey" element={<SurveyNew />} />
         <Route path="/survey-old" element={<Survey />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<DashboardNew />} />
+        <Route path="/dashboard-old" element={<Dashboard />} />
         <Route path="/daily-report" element={<DailyReport />} />
         <Route path="*" element={<Navigate to="/welcome" replace />} />
       </Routes>
