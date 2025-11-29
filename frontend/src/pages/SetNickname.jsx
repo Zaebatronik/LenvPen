@@ -34,35 +34,51 @@ function SetNickname() {
     setLoading(true);
 
     try {
-      // Сохраняем пользователя в Supabase
-      const { data, error } = await supabase
-        .from('users')
-        .insert([
-          {
-            telegram_id: user.telegram_id,
-            username: nickname.trim(),
-            first_name: user.first_name,
-            last_name: user.last_name,
-            country,
-            city,
-          }
-        ])
-        .select()
-        .single();
+      let userData;
 
-      if (error) {
-        throw error;
+      // Проверяем, это не тестовый пользователь
+      if (user.telegram_id !== 'dev_test' && typeof user.telegram_id === 'number') {
+        // Сохраняем реального пользователя в Supabase
+        const { data, error } = await supabase
+          .from('users')
+          .insert([
+            {
+              telegram_id: user.telegram_id,
+              username: nickname.trim(),
+              first_name: user.first_name,
+              last_name: user.last_name,
+              country,
+              city,
+            }
+          ])
+          .select()
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        userData = {
+          ...user,
+          id: data.id,
+          country,
+          city,
+          username: nickname.trim(),
+          registered: true,
+          registered_at: data.created_at
+        };
+      } else {
+        // Для тестового пользователя просто обновляем локальные данные
+        console.log('Test user - skipping Supabase');
+        userData = {
+          ...user,
+          country,
+          city,
+          username: nickname.trim(),
+          registered: true,
+          registered_at: new Date().toISOString()
+        };
       }
-
-      const userData = {
-        ...user,
-        id: data.id,
-        country,
-        city,
-        username: nickname.trim(),
-        registered: true,
-        registered_at: data.created_at
-      };
       
       localStorage.setItem(`lenvpen_user_${user.telegram_id}`, JSON.stringify(userData));
       updateUser(userData);

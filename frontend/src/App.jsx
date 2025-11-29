@@ -37,11 +37,34 @@ function App() {
 
   const authenticateUser = async () => {
     try {
-      // Получаем Telegram ID пользователя (всегда используем реальный ID)
+      // Получаем Telegram ID пользователя
+      console.log('WebApp initData:', WebApp.initData);
+      console.log('WebApp initDataUnsafe:', WebApp.initDataUnsafe);
+      
       const telegramId = WebApp.initDataUnsafe?.user?.id;
       
       if (!telegramId) {
-        console.error('Telegram ID not found');
+        console.error('Telegram ID not found - using dev mode');
+        console.error('WebApp object:', WebApp);
+        
+        // В режиме разработки используем тестовый ID
+        if (import.meta.env.DEV || !WebApp.initData) {
+          console.log('Development mode - using test user');
+          const testUser = {
+            id: `user_dev_test`,
+            telegram_id: 'dev_test',
+            username: 'dev_user',
+            first_name: 'Тестовый пользователь',
+            last_name: '',
+            photo_url: null,
+            registered: false
+          };
+          setUser(testUser);
+          setLoading(false);
+          navigate('/welcome');
+          return;
+        }
+        
         setError('Ошибка авторизации Telegram');
         setLoading(false);
         return;
