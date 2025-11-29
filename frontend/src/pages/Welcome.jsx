@@ -11,6 +11,11 @@ function Welcome() {
 
   return (
     <div className="min-h-screen bg-lenvpen-dark flex flex-col items-center justify-center p-6">
+      {/* ТЕСТОВЫЙ БАННЕР */}
+      <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-lenvpen-orange px-6 py-3 rounded-lg shadow-lg z-50">
+        <span className="text-lenvpen-dark text-xl font-bold">ТЕСТ v{APP_VERSION}</span>
+      </div>
+      
       <div className="max-w-2xl w-full text-center space-y-8">
         {/* Логотип/Emoji */}
         <div className="text-8xl mb-6">📱</div>
