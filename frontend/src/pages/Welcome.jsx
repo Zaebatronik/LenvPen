@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import WebApp from '@twa-dev/sdk';
 import texts from '../locales/ru.json';
@@ -5,9 +6,48 @@ import { APP_VERSION } from '../config/version';
 
 function Welcome() {
   const navigate = useNavigate();
+  const [afkMessage, setAfkMessage] = useState('');
+  const [blink, setBlink] = useState(false);
+  const [lastActivity, setLastActivity] = useState(Date.now());
+
+  // AFK логика
+  useEffect(() => {
+    const checkAFK = setInterval(() => {
+      const now = Date.now();
+      const timeSinceActivity = now - lastActivity;
+      
+      if (timeSinceActivity > 10000 && !afkMessage) {
+        setAfkMessage('Только зашёл — уже отдыхаешь? Классика.');
+        setTimeout(() => setAfkMessage(''), 5000);
+      }
+    }, 5000);
+
+    return () => clearInterval(checkAFK);
+  }, [lastActivity, afkMessage]);
+
+  // Анимация моргания
+  useEffect(() => {
+    const blinkInterval = setInterval(() => {
+      setBlink(true);
+      setTimeout(() => setBlink(false), 200);
+    }, 4000);
+
+    return () => clearInterval(blinkInterval);
+  }, []);
+
+  // Сброс таймера при любом взаимодействии
+  const handleActivity = () => {
+    setLastActivity(Date.now());
+  };
 
   const handleStart = () => {
+    handleActivity();
     navigate('/select-country');
+  };
+
+  const handleCancel = () => {
+    handleActivity();
+    WebApp.close();
   };
 
   const handleClearData = () => {
@@ -29,71 +69,88 @@ function Welcome() {
       </div>
 
       {/* Контент */}
-      <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full relative z-10 space-y-6">
+      <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full relative z-10 space-y-6" onMouseMove={handleActivity} onTouchStart={handleActivity}>
         
-        {/* Лого и название */}
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-lenvpen-orange to-lenvpen-red rounded-3xl shadow-2xl mb-4">
-            <span className="text-6xl">🦥</span>
+        {/* Круглый placeholder под аватара ленивца */}
+        <div className="text-center space-y-4">
+          <div className="relative inline-block">
+            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-lenvpen-orange/20 to-lenvpen-red/20 border-4 border-lenvpen-orange/30 flex items-center justify-center shadow-2xl mx-auto">
+              <span className={`text-7xl transition-all duration-200 ${blink ? 'scale-90 opacity-80' : 'scale-100'}`}>🦥</span>
+            </div>
+            {/* Пульсирующий эффект */}
+            <div className="absolute inset-0 rounded-full bg-lenvpen-orange/10 animate-ping"></div>
           </div>
           
-          <h1 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-lenvpen-orange via-lenvpen-red to-lenvpen-orange leading-tight">
-            {texts.welcome.title}
+          <h1 className="text-3xl font-black text-lenvpen-text leading-tight">
+            Добро пожаловать,<br/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-lenvpen-orange to-lenvpen-red">
+              герой диванных войск.
+            </span>
           </h1>
           
-          <p className="text-lg text-lenvpen-orange font-semibold">
-            {texts.welcome.subtitle}
+          <p className="text-lg text-lenvpen-orange/80">
+            Не бойся. Сейчас не больно.<br/>
+            <span className="text-sm text-lenvpen-muted">Больно будет потом.</span>
           </p>
         </div>
 
-        {/* Фичи в компактных карточках */}
-        <div className="space-y-3">
-          <div className="bg-lenvpen-card/80 backdrop-blur-sm rounded-2xl p-4 border border-lenvpen-orange/20">
-            <div className="flex items-start gap-3">
-              <span className="text-3xl">📊</span>
-              <div className="flex-1">
-                <h3 className="text-lenvpen-text font-semibold mb-1">C3/O3 Система</h3>
-                <p className="text-sm text-lenvpen-muted">Математическая модель отслеживания прогресса</p>
-              </div>
+        {/* Описание того, что сейчас будет */}
+        <div className="bg-lenvpen-card/60 backdrop-blur-sm rounded-2xl p-6 border border-lenvpen-orange/20 space-y-3">
+          <div className="flex items-start gap-3">
+            <span className="text-3xl">🎯</span>
+            <div className="flex-1">
+              <h3 className="text-lenvpen-text font-bold text-lg mb-2">Мы тут не играем в мотивацию</h3>
+              <p className="text-sm text-lenvpen-muted leading-relaxed">
+                Никаких блёсток. Только прямота. Сейчас будет диагностика твоего бардака.
+              </p>
             </div>
           </div>
-
-          <div className="bg-lenvpen-card/80 backdrop-blur-sm rounded-2xl p-4 border border-lenvpen-orange/20">
-            <div className="flex items-start gap-3">
-              <span className="text-3xl">🎯</span>
-              <div className="flex-1">
-                <h3 className="text-lenvpen-text font-semibold mb-1">Дневные отчёты</h3>
-                <p className="text-sm text-lenvpen-muted">Ежедневный трекинг зависимостей и целей</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-lenvpen-card/80 backdrop-blur-sm rounded-2xl p-4 border border-lenvpen-orange/20">
-            <div className="flex items-start gap-3">
-              <span className="text-3xl">💪</span>
-              <div className="flex-1">
-                <h3 className="text-lenvpen-text font-semibold mb-1">Метрика дисциплины</h3>
-                <p className="text-sm text-lenvpen-muted">Визуализация вашего прогресса в режиме реального времени</p>
-              </div>
+          
+          <div className="flex items-start gap-3 pt-3 border-t border-lenvpen-orange/10">
+            <span className="text-3xl">🔍</span>
+            <div className="flex-1">
+              <h3 className="text-lenvpen-text font-bold mb-2">Нам нужно понять твой бардак</h3>
+              <p className="text-sm text-lenvpen-muted leading-relaxed">
+                Чтобы строить маршрут — нужно узнать, что ты хочешь и что тебе мешает.
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Кнопка старта */}
+        {/* AFK сообщение */}
+        {afkMessage && (
+          <div className="bg-lenvpen-red/20 backdrop-blur-sm rounded-xl p-4 border border-lenvpen-red/30 animate-fade-in">
+            <p className="text-lenvpen-text text-center text-sm">
+              💤 {afkMessage}
+            </p>
+          </div>
+        )}
+
+        {/* Кнопка начать тестирование */}
         <button
           onClick={handleStart}
-          className="btn-primary text-xl py-4 shadow-2xl shadow-lenvpen-red/30 transform transition-all active:scale-95"
+          className="btn-primary text-xl py-5 shadow-2xl shadow-lenvpen-red/30 transform transition-all active:scale-95 hover:scale-105"
         >
-          {texts.welcome.btnStart} 🚀
+          Начать тестирование 🎯
+        </button>
+
+        {/* Кнопка передумал */}
+        <button
+          onClick={handleCancel}
+          className="text-lenvpen-muted/60 text-base py-3 hover:text-lenvpen-muted transition-colors border border-lenvpen-muted/20 rounded-xl hover:border-lenvpen-muted/40"
+        >
+          Не, я передумал
         </button>
 
         {/* Кнопка очистки (для тестирования) */}
-        <button
-          onClick={handleClearData}
-          className="text-lenvpen-muted/30 text-xs py-2 hover:text-lenvpen-muted/50 transition-colors"
-        >
-          🗑️ Очистить данные
-        </button>
+        {import.meta.env.DEV && (
+          <button
+            onClick={handleClearData}
+            className="text-lenvpen-muted/20 text-xs py-2 hover:text-lenvpen-muted/40 transition-colors"
+          >
+            🗑️ DEV: Очистить данные
+          </button>
+        )}
       </div>
       
       {/* Версия */}
