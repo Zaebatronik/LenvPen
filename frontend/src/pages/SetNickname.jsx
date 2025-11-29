@@ -33,24 +33,96 @@ function SetNickname() {
     setLoading(true);
 
     try {
-      // Временно: используем только localStorage, пока не настроим RLS в Supabase
-      const userData = {
-        ...user,
-        id: `user_${user.telegram_id}`,
-        country,
-        city,
-        username: nickname.trim(),
-        registered: true,
-        registered_at: new Date().toISOString()
-      };
+      let userData;
+
+      // Пытаемся сохранить в Supabase, если не получится - используем localStorage
+      if (user.telegram_id !== 'dev_test' && typeof user.telegram_id === 'number') {
+        try {
+          const { supabase } = await import('../services/supabase');
+          
+          // Проверяем, существует ли пользователь
+          const { data: existingUser } = await supabase
+            .from('users')
+            .select('*')
+            .eq('telegram_id', user.telegram_id)
+            .single();
+
+          if (existingUser) {
+            // Обновляем существующего пользователя
+            const { data, error } = await supabase
+              .from('users')
+              .update({
+                username: nickname.trim(),
+                country,
+                city,
+                updated_at: new Date().toISOString()
+              })
+              .eq('telegram_id', user.telegram_id)
+              .select()
+              .single();
+
+            if (!error && data) {
+              userData = {
+                ...user,
+                id: data.id,
+                country,
+                city,
+                username: nickname.trim(),
+                registered: true,
+                registered_at: data.created_at
+              };
+              console.log('User updated in Supabase');
+            }
+          } else {
+            // Создаём нового пользователя
+            const { data, error } = await supabase
+              .from('users')
+              .insert([{
+                telegram_id: user.telegram_id,
+                username: nickname.trim(),
+                first_name: user.first_name,
+                last_name: user.last_name,
+                country,
+                city,
+              }])
+              .select()
+              .single();
+
+            if (!error && data) {
+              userData = {
+                ...user,
+                id: data.id,
+                country,
+                city,
+                username: nickname.trim(),
+                registered: true,
+                registered_at: data.created_at
+              };
+              console.log('User created in Supabase');
+            }
+          }
+        } catch (supabaseError) {
+          console.log('Supabase error, using localStorage fallback:', supabaseError.message);
+        }
+      }
+
+      // Фоллбэк: используем localStorage если Supabase не сработал
+      if (!userData) {
+        userData = {
+          ...user,
+          id: `user_${user.telegram_id}`,
+          country,
+          city,
+          username: nickname.trim(),
+          registered: true,
+          registered_at: new Date().toISOString()
+        };
+        console.log('User registered locally (localStorage)');
+      }
       
       localStorage.setItem(`lenvpen_user_${user.telegram_id}`, JSON.stringify(userData));
       updateUser(userData);
       
-      // TODO: Добавить синхронизацию с Supabase после настройки RLS политик
-      console.log('User registered locally:', userData);
-      
-      // Сразу переходим к опросу после регистрации
       navigate('/survey');
     } catch (error) {
       console.error('Registration error:', error);
@@ -114,8 +186,8 @@ function SetNickname() {
       </div>
 
       {/* Версия */}
-      <div className="absolute bottom-2 right-2 text-xs text-lenvpen-text opacity-30">
-        {APP_VERSION}
+      <div className="absolute bottom-4 left-0 right-0 text-center">
+        <span className="text-lenvpen-text/40 text-xs font-medium">v{APP_VERSION}</span>
       </div>
     </div>
   );

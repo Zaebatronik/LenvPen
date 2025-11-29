@@ -154,8 +154,8 @@ function Welcome() {
       </div>
       
       {/* Версия */}
-      <div className="absolute bottom-4 right-4">
-        <span className="text-lenvpen-text/20 text-xs">v{APP_VERSION}</span>
+      <div className="absolute bottom-4 left-0 right-0 text-center">
+        <span className="text-lenvpen-text/40 text-xs font-medium">v{APP_VERSION}</span>
       </div>
     </div>
   );

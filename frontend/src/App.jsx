@@ -74,14 +74,51 @@ function App() {
 
       console.log('Authenticating user with telegram_id:', telegramId);
       
-      // Проверяем localStorage сначала (временно не используем Supabase из-за RLS)
-      // TODO: Включить Supabase после настройки RLS политик
-      const localUserData = localStorage.getItem(`lenvpen_user_${telegramId}`);
+      // Сначала проверяем Supabase, потом localStorage
+      let userData = null;
       
-      if (localUserData) {
-        const userData = JSON.parse(localUserData);
-        console.log('User found in localStorage:', userData);
+      try {
+        const { supabase } = await import('./services/supabase');
         
+        const { data: existingUser, error } = await supabase
+          .from('users')
+          .select('*')
+          .eq('telegram_id', telegramId)
+          .single();
+
+        if (existingUser && !error) {
+          console.log('User found in Supabase:', existingUser);
+          userData = {
+            id: existingUser.id,
+            telegram_id: existingUser.telegram_id,
+            username: existingUser.username,
+            first_name: existingUser.first_name,
+            last_name: existingUser.last_name,
+            country: existingUser.country,
+            city: existingUser.city,
+            photo_url: existingUser.photo_url,
+            registered: true,
+            registered_at: existingUser.created_at
+          };
+          
+          // Сохраняем в localStorage для быстрого доступа
+          localStorage.setItem(`lenvpen_user_${telegramId}`, JSON.stringify(userData));
+        }
+      } catch (supabaseError) {
+        console.log('Supabase check failed, using localStorage:', supabaseError.message);
+      }
+      
+      // Фоллбэк: проверяем localStorage если Supabase не сработал
+      if (!userData) {
+        const localUserData = localStorage.getItem(`lenvpen_user_${telegramId}`);
+        if (localUserData) {
+          userData = JSON.parse(localUserData);
+          console.log('User found in localStorage:', userData);
+        }
+      }
+      
+      // Если пользователь найден
+      if (userData) {
         setUser(userData);
         setLoading(false);
         
@@ -94,7 +131,6 @@ function App() {
             navigate('/survey');
           }
         } else {
-          // Регистрация не завершена - продолжаем
           navigate('/welcome');
         }
         return;

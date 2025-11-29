@@ -823,8 +823,8 @@ function SurveyNew() {
       </div>
 
       {/* Версия */}
-      <div className="fixed bottom-2 right-2">
-        <span className="text-lenvpen-text/20 text-xs">v{APP_VERSION}</span>
+      <div className="fixed bottom-4 left-0 right-0 text-center">
+        <span className="text-lenvpen-text/40 text-xs font-medium">v{APP_VERSION}</span>
       </div>
     </div>
   );

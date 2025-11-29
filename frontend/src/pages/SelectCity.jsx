@@ -72,8 +72,8 @@ function SelectCity() {
       </div>
 
       {/* Версия */}
-      <div className="absolute bottom-2 right-2 text-xs text-lenvpen-text opacity-30">
-        {APP_VERSION}
+      <div className="absolute bottom-4 left-0 right-0 text-center">
+        <span className="text-lenvpen-text/40 text-xs font-medium">v{APP_VERSION}</span>
       </div>
     </div>
   );
