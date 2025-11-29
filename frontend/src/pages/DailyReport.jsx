@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import { apiClient } from '../services/api';
 import texts from '../locales/ru.json';
+import { APP_VERSION } from '../config/version';
 
 function DailyReport() {
   const navigate = useNavigate();
@@ -77,9 +78,9 @@ function DailyReport() {
   };
 
   return (
-    <div className="min-h-screen bg-lenvpen-dark p-6">
-      <div className="max-w-2xl mx-auto space-y-6">
-        <h1 className="text-4xl font-bold text-lenvpen-text">
+    <div className="min-h-screen bg-lenvpen-dark p-4 overflow-hidden relative">
+      <div className="max-w-2xl mx-auto space-y-4">
+        <h1 className="text-3xl font-bold text-lenvpen-text">
           {texts.dailyReport.title}
         </h1>
 
@@ -216,6 +217,11 @@ function DailyReport() {
             {loading ? 'Сохранение...' : texts.dailyReport.btnSubmit}
           </button>
         </div>
+      </div>
+      
+      {/* Версия */}
+      <div className="absolute bottom-2 right-2 text-xs text-lenvpen-text opacity-30">
+        {APP_VERSION}
       </div>
     </div>
   );

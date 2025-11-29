@@ -79,7 +79,7 @@ function Survey() {
   };
 
   return (
-    <div className="min-h-screen bg-lenvpen-dark p-6">
+    <div className="min-h-screen bg-lenvpen-dark p-4 overflow-hidden">
       <div className="max-w-2xl mx-auto">
         {/* Прогресс */}
         <div className="mb-6">
@@ -222,8 +222,8 @@ function Survey() {
       </div>
       
       {/* Версия */}
-      <div className="fixed bottom-4 right-4 bg-lenvpen-card px-3 py-1 rounded-lg">
-        <span className="text-lenvpen-text/60 text-sm font-mono">v{APP_VERSION}</span>
+      <div className="fixed bottom-2 right-2">
+        <span className="text-lenvpen-text/30 text-xs">v{APP_VERSION}</span>
       </div>
     </div>
   );
