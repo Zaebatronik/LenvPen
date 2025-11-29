@@ -112,44 +112,47 @@ function App() {
         } else {
           navigate('/survey');
         }
-      } else {
-        // Пользователь не найден в базе - проверяем localStorage (возможно регистрация не завершена)
-        const localUserData = localStorage.getItem(`lenvpen_user_${telegramId}`);
-        
-        if (localUserData) {
-          const userData = JSON.parse(localUserData);
-          console.log('User found in localStorage (registration incomplete):', userData);
-          
-          setUser(userData);
-          setLoading(false);
-          
-          // Если registered: true, но нет в Supabase - очищаем и начинаем заново
-          if (userData.registered) {
-            console.log('User marked as registered but not in DB - clearing data');
-            localStorage.removeItem(`lenvpen_user_${telegramId}`);
-            navigate('/welcome');
-          } else {
-            // Регистрация не завершена - продолжаем
-            navigate('/welcome');
-          }
-        } else {
-          // Новый пользователь - создаем базовые данные
-          console.log('New user, telegram_id:', telegramId);
-        
-        const newUser = {
-          id: `user_${telegramId}`,
-          telegram_id: telegramId,
-          username: WebApp.initDataUnsafe?.user?.username || 'user',
-          first_name: WebApp.initDataUnsafe?.user?.first_name || 'Пользователь',
-          last_name: WebApp.initDataUnsafe?.user?.last_name || '',
-          photo_url: null,
-          registered: false // Флаг регистрации
-        };
-        
-        setUser(newUser);
-        setLoading(false);
-        navigate('/welcome');
+        return;
       }
+      
+      // Пользователь не найден в базе - проверяем localStorage (возможно регистрация не завершена)
+      const localUserData = localStorage.getItem(`lenvpen_user_${telegramId}`);
+      
+      if (localUserData) {
+        const userData = JSON.parse(localUserData);
+        console.log('User found in localStorage (registration incomplete):', userData);
+        
+        setUser(userData);
+        setLoading(false);
+        
+        // Если registered: true, но нет в Supabase - очищаем и начинаем заново
+        if (userData.registered) {
+          console.log('User marked as registered but not in DB - clearing data');
+          localStorage.removeItem(`lenvpen_user_${telegramId}`);
+          navigate('/welcome');
+        } else {
+          // Регистрация не завершена - продолжаем
+          navigate('/welcome');
+        }
+        return;
+      }
+      
+      // Новый пользователь - создаем базовые данные
+      console.log('New user, telegram_id:', telegramId);
+    
+      const newUser = {
+        id: `user_${telegramId}`,
+        telegram_id: telegramId,
+        username: WebApp.initDataUnsafe?.user?.username || 'user',
+        first_name: WebApp.initDataUnsafe?.user?.first_name || 'Пользователь',
+        last_name: WebApp.initDataUnsafe?.user?.last_name || '',
+        photo_url: null,
+        registered: false
+      };
+      
+      setUser(newUser);
+      setLoading(false);
+      navigate('/welcome');
 
     } catch (err) {
       console.error('Authentication error:', err);
