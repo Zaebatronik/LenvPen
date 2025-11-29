@@ -52,30 +52,21 @@ function Survey() {
     setSaving(true);
 
     try {
-      // Сохраняем baseline
-      await apiClient.saveBaseline(user.id, {
+      // Сохраняем в localStorage для тестирования
+      const surveyData = {
         status,
         position,
-        baseline: {}
-      });
-
-      // Сохраняем зависимости
-      for (const depKey of selectedDeps) {
-        await apiClient.saveDependency(user.id, {
-          key: depKey,
-          meta: {},
-          priority: 5
-        });
-      }
-
-      // Сохраняем главную цель
-      await apiClient.saveMainGoal(user.id, {
-        text: mainGoal,
-        category: 'life_goal'
-      });
+        dependencies: selectedDeps,
+        mainGoal
+      };
+      localStorage.setItem('lenvpen_survey', JSON.stringify(surveyData));
+      
+      console.log('Survey data saved locally:', surveyData);
 
       // Переходим на dashboard
-      navigate('/dashboard');
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 500);
 
     } catch (error) {
       console.error('Save survey error:', error);

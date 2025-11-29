@@ -12,25 +12,19 @@ function Dashboard() {
   const [hasTodayReport, setHasTodayReport] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      loadData();
+    // Загружаем данные из localStorage (mock data)
+    const surveyData = localStorage.getItem('lenvpen_survey');
+    if (surveyData) {
+      try {
+        const data = JSON.parse(surveyData);
+        console.log('Loaded survey data:', data);
+      } catch (e) {
+        console.error('Parse error:', e);
+      }
     }
+    setLoading(false);
+    setHasTodayReport(false);
   }, [user]);
-
-  const loadData = async () => {
-    try {
-      await loadProfile(user.id, apiClient);
-      
-      // Проверяем, заполнен ли сегодняшний отчёт
-      const todayCheck = await apiClient.checkTodayReport(user.id);
-      setHasTodayReport(todayCheck.has_report_today);
-      
-      setLoading(false);
-    } catch (error) {
-      console.error('Load dashboard error:', error);
-      setLoading(false);
-    }
-  };
 
   if (loading) {
     return (
