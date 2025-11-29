@@ -83,7 +83,8 @@ function SetNickname() {
       localStorage.setItem(`lenvpen_user_${user.telegram_id}`, JSON.stringify(userData));
       updateUser(userData);
       
-      navigate('/registration-success');
+      // Сразу переходим к опросу после регистрации
+      navigate('/survey');
     } catch (error) {
       console.error('Registration error:', error);
       alert('Ошибка регистрации: ' + error.message);
