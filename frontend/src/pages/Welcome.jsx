@@ -6,7 +6,7 @@ function Welcome() {
   const navigate = useNavigate();
 
   const handleStart = () => {
-    navigate('/registration');
+    navigate('/select-country');
   };
 
   return (

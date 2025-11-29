@@ -4,7 +4,9 @@ import WebApp from '@twa-dev/sdk';
 
 // Import pages
 import Welcome from './pages/Welcome';
-import Registration from './pages/Registration';
+import SelectCountry from './pages/SelectCountry';
+import SelectCity from './pages/SelectCity';
+import SetNickname from './pages/SetNickname';
 import RegistrationSuccess from './pages/RegistrationSuccess';
 import Survey from './pages/Survey';
 import Dashboard from './pages/Dashboard';
@@ -112,7 +114,9 @@ function App() {
     <div className="min-h-screen bg-lenvpen-dark">
       <Routes>
         <Route path="/welcome" element={<Welcome />} />
-        <Route path="/registration" element={<Registration />} />
+        <Route path="/select-country" element={<SelectCountry />} />
+        <Route path="/select-city" element={<SelectCity />} />
+        <Route path="/set-nickname" element={<SetNickname />} />
         <Route path="/registration-success" element={<RegistrationSuccess />} />
         <Route path="/survey" element={<Survey />} />
         <Route path="/dashboard" element={<Dashboard />} />
