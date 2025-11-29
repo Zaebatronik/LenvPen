@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #0f0f0f;
+  color: #e5e5e5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-lenvpen-red hover:bg-lenvpen-orange text-white font-bold py-3 px-6 rounded-lg transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-lenvpen-card hover:bg-lenvpen-bg text-lenvpen-text font-medium py-3 px-6 rounded-lg transition-colors duration-200;
+  }
+  
+  .card {
+    @apply bg-lenvpen-card rounded-xl p-4 shadow-lg;
+  }
+  
+  .progress-bar {
+    @apply w-full h-3 bg-lenvpen-bg rounded-full overflow-hidden;
+  }
+  
+  .progress-fill {
+    @apply h-full bg-gradient-to-r from-lenvpen-red via-lenvpen-orange to-lenvpen-green transition-all duration-500;
+  }
+}
