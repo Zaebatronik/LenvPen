@@ -38,43 +38,21 @@ function App() {
       // Получаем initData от Telegram
       const initData = WebApp.initData;
 
-      if (!initData) {
-        // ТЕСТОВЫЙ РЕЖИМ: используем моковые данные
-        if (import.meta.env.DEV) {
-          console.warn('Development mode: Using mock user data');
-          
-          // Создаём тестового пользователя
-          const mockUser = {
-            id: 'test-user-' + Math.random().toString(36).substr(2, 9),
-            telegram_id: 123456789,
-            username: 'test_user',
-            first_name: 'Тестовый',
-            last_name: 'Пользователь',
-            photo_url: null
-          };
-          
-          setUser(mockUser);
-          setLoading(false);
-          navigate('/welcome');
-          return;
-        }
-      }
-
-      // Аутентификация на backend
-      const authData = await apiClient.authenticateTelegram(initData);
-
-      setUser(authData.user);
-
-      if (authData.has_profile) {
-        // Загружаем полный профиль
-        await loadProfile(authData.user.id, apiClient);
-        navigate('/dashboard');
-      } else {
-        // Новый пользователь - показываем welcome
-        navigate('/welcome');
-      }
-
+      // ВСЕГДА используем моковые данные (пока нет backend)
+      console.log('Using mock user data');
+      
+      const mockUser = {
+        id: 'test-user-' + Math.random().toString(36).substr(2, 9),
+        telegram_id: WebApp.initDataUnsafe?.user?.id || 123456789,
+        username: WebApp.initDataUnsafe?.user?.username || 'test_user',
+        first_name: WebApp.initDataUnsafe?.user?.first_name || 'Пользователь',
+        last_name: WebApp.initDataUnsafe?.user?.last_name || '',
+        photo_url: null
+      };
+      
+      setUser(mockUser);
       setLoading(false);
+      navigate('/welcome');
 
     } catch (err) {
       console.error('Authentication error:', err);
