@@ -14,6 +14,7 @@ import Dashboard from './pages/Dashboard';
 import DashboardNew from './pages/DashboardNew';
 import DailyReport from './pages/DailyReport';
 import DailyTasks from './pages/DailyTasks';
+import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 
 // Import services
@@ -200,6 +201,7 @@ function App() {
         <Route path="/dashboard-old" element={<Dashboard />} />
         <Route path="/daily-report" element={<DailyReport />} />
         <Route path="/daily-tasks" element={<DailyTasks />} />
+        <Route path="/analytics" element={<Analytics />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/welcome" replace />} />
       </Routes>
