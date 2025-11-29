@@ -21,9 +21,12 @@ function Welcome() {
         <div className="text-8xl mb-6">📱</div>
 
         {/* Заголовок */}
-        <h1 className="text-5xl font-bold text-lenvpen-text">
-          {texts.welcome.title}
+        <h1 className="text-5xl font-bold text-lenvpen-orange">
+          🔥 ТЕСТ ВЕРСИЯ 0.0.5 🔥
         </h1>
+        <h2 className="text-3xl font-bold text-lenvpen-text">
+          {texts.welcome.title}
+        </h2>
 
         {/* Подзаголовок */}
         <p className="text-2xl text-lenvpen-orange font-medium">
