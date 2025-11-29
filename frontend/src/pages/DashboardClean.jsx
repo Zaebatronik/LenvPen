@@ -97,6 +97,18 @@ function DashboardClean() {
         setShowBubble(true);
       }, 2000);
       
+      // БЛОК D6: Загружаем последний отчёт для обновления прогресса
+      const todayReportKey = `lenvpen_daily_report_${user.telegram_id}_${today}`;
+      const todayReport = localStorage.getItem(todayReportKey);
+      if (todayReport) {
+        const report = JSON.parse(todayReport);
+        if (report.analysis && report.analysis.goalImpact) {
+          // Обновляем прогресс на основе отчёта
+          const adjustedProgress = Math.min(100, Math.max(0, calculatedProgress + report.analysis.goalImpact));
+          setProgress(adjustedProgress);
+        }
+      }
+      
       // Сохраняем время визита
       localStorage.setItem(`lenvpen_last_visit_${user.telegram_id}`, now.toISOString());
       
@@ -216,6 +228,14 @@ function DashboardClean() {
           >
             <span className="text-2xl">✅</span>
             <span>Задания дня</span>
+          </button>
+          
+          <button
+            onClick={() => navigate('/daily-report')}
+            className="w-full bg-gradient-to-r from-lenvpen-green to-lenvpen-orange text-white py-4 rounded-xl font-bold text-lg hover:from-lenvpen-orange hover:to-lenvpen-green transition-colors flex items-center justify-center gap-3"
+          >
+            <span className="text-2xl">📋</span>
+            <span>Отчёт дня</span>
           </button>
           
           <button
