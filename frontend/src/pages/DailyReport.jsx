@@ -1,208 +1,397 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
-import { apiClient } from '../services/api';
-import texts from '../locales/ru.json';
 import { APP_VERSION } from '../config/version';
+import { DEPENDENCIES } from '../config/constants';
 
 function DailyReport() {
   const navigate = useNavigate();
-  const { user, dependencies } = useStore();
-  const [loading, setLoading] = useState(false);
-  const [alreadyFilled, setAlreadyFilled] = useState(false);
+  const { user } = useStore();
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [userDependencies, setUserDependencies] = useState([]);
   
-  // Данные формы
-  const [didStep, setDidStep] = useState(false);
-  const [stepDescription, setStepDescription] = useState('');
-  const [rating, setRating] = useState(5);
-  const [depData, setDepData] = useState({});
+  // Form state - новый формат C3/O3
+  const [goalProgress, setGoalProgress] = useState(5);
+  const [mood, setMood] = useState(5);
+  const [stress, setStress] = useState(5);
+  const [sleepHours, setSleepHours] = useState(7);
+  const [comment, setComment] = useState('');
+  const [depValues, setDepValues] = useState({}); // { dep_key: { value, slip } }
 
   useEffect(() => {
-    checkTodayReport();
-  }, [user]);
+    loadUserDependencies();
+  }, []);
 
-  const checkTodayReport = async () => {
+  const loadUserDependencies = async () => {
     try {
-      const check = await apiClient.checkTodayReport(user.id);
-      setAlreadyFilled(check.has_report_today);
-      
-      if (check.has_report_today && check.report) {
-        // Заполняем форму существующими данными
-        setDidStep(check.report.for_goal?.did_step || false);
-        setStepDescription(check.report.for_goal?.step_description || '');
-        setRating(check.report.for_goal?.rating || 5);
-        setDepData(check.report.dependencies_daily || {});
+      // TODO: Load from Supabase via GET /api/profile/me/dependencies
+      // For now, load from localStorage survey data
+      const surveyData = localStorage.getItem(`lenvpen_survey_${user.telegram_id}`);
+      if (surveyData) {
+        const parsed = JSON.parse(surveyData);
+        const deps = parsed.dependencies || [];
+        setUserDependencies(deps.map(key => ({
+          id: key, // temp id, will be replaced with real UUID
+          key,
+          ...DEPENDENCIES[key]
+        })));
+        
+        // Initialize dep values
+        const initialValues = {};
+        deps.forEach(key => {
+          initialValues[key] = {
+            value: getInitialValue(key),
+            slip: false
+          };
+        });
+        setDepValues(initialValues);
       }
+      setLoading(false);
     } catch (error) {
-      console.error('Check today report error:', error);
-    }
-  };
-
-  const handleDepChange = (depKey, field, value) => {
-    setDepData({
-      ...depData,
-      [depKey]: {
-        ...depData[depKey],
-        [field]: value
-      }
-    });
-  };
-
-  const handleSubmit = async () => {
-    setLoading(true);
-
-    try {
-      const today = new Date().toISOString().split('T')[0];
-
-      await apiClient.saveDailyReport({
-        userId: user.id,
-        date: today,
-        for_goal: {
-          did_step: didStep,
-          step_description: stepDescription,
-          rating
-        },
-        dependencies_daily: depData,
-        mood: {}
-      });
-
-      alert(texts.dailyReport.success);
-      navigate('/dashboard');
-
-    } catch (error) {
-      console.error('Save daily report error:', error);
-      alert('Ошибка: ' + error.message);
-    } finally {
+      console.error('Load dependencies error:', error);
       setLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-lenvpen-dark p-4 overflow-hidden relative">
-      <div className="max-w-2xl mx-auto space-y-4">
-        <h1 className="text-3xl font-bold text-lenvpen-text">
-          {texts.dailyReport.title}
-        </h1>
+  const getInitialValue = (depKey) => {
+    switch (depKey) {
+      case 'smoking': return { smoked: 0 };
+      case 'phone': return { hours: 0 };
+      case 'alcohol': return { drinks: 0 };
+      case 'gaming': return { hours: 0 };
+      case 'overeating': return { overate: false };
+      case 'procrastination': return { hours: 0 };
+      case 'drugs': return { used: false };
+      default: return { value: 0 };
+    }
+  };
 
-        {alreadyFilled && (
-          <div className="bg-lenvpen-green/20 border-2 border-lenvpen-green rounded-xl p-4 text-lenvpen-green">
-            {texts.dailyReport.alreadyFilled}
+  const updateDepValue = (depKey, field, value) => {
+    setDepValues(prev => ({
+      ...prev,
+      [depKey]: {
+        ...prev[depKey],
+        value: {
+          ...prev[depKey].value,
+          [field]: value
+        }
+      }
+    }));
+  };
+
+  const toggleSlip = (depKey) => {
+    setDepValues(prev => ({
+      ...prev,
+      [depKey]: {
+        ...prev[depKey],
+        slip: !prev[depKey].slip
+      }
+    }));
+  };
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+
+    try {
+      // Prepare payload for new API format
+      const payload = {
+        goal_progress: goalProgress,
+        mood,
+        stress,
+        sleep_hours: sleepHours,
+        comment: comment.trim() || null,
+        dependencies: Object.entries(depValues).map(([key, data]) => ({
+          user_dependency_id: key, // TODO: use real UUID from Supabase
+          value: data.value,
+          slip: data.slip
+        }))
+      };
+
+      console.log('Submitting daily report:', payload);
+
+      // TODO: Implement API call
+      // const response = await apiClient.post('/profile/me/daily_report', payload);
+
+      alert('✅ Отчёт сохранён! Worker обработает данные и обновит метрики.');
+      navigate('/dashboard');
+
+    } catch (error) {
+      console.error('Submit report error:', error);
+      alert('Ошибка отправки: ' + error.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const renderDepInput = (dep) => {
+    const value = depValues[dep.key]?.value || {};
+    const slip = depValues[dep.key]?.slip || false;
+
+    return (
+      <div key={dep.key} className="bg-lenvpen-card p-4 rounded-lg space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">{dep.icon}</span>
+            <span className="text-lenvpen-text font-semibold">{dep.title}</span>
+          </div>
+          <button
+            onClick={() => toggleSlip(dep.key)}
+            className={`px-3 py-1 rounded text-sm transition-colors ${
+              slip 
+                ? 'bg-lenvpen-red text-white' 
+                : 'bg-lenvpen-bg text-lenvpen-muted'
+            }`}
+          >
+            {slip ? '⚠️ Срыв' : 'Без срыва'}
+          </button>
+        </div>
+
+        {/* Specific inputs based on dependency type */}
+        {dep.key === 'smoking' && (
+          <div>
+            <label className="text-sm text-lenvpen-muted block mb-2">
+              Сколько выкурили сигарет: <span className="text-lenvpen-orange">{value.smoked || 0}</span>
+            </label>
+            <input
+              type="number"
+              min="0"
+              value={value.smoked || 0}
+              onChange={(e) => updateDepValue(dep.key, 'smoked', parseInt(e.target.value) || 0)}
+              className="w-full p-3 bg-lenvpen-bg text-lenvpen-text rounded"
+            />
           </div>
         )}
 
-        {/* Главная цель */}
-        <div className="card space-y-4">
-          <h2 className="text-2xl font-bold text-lenvpen-text">
-            {texts.dailyReport.goal.title}
-          </h2>
-          
-          <label className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={didStep}
-              onChange={(e) => setDidStep(e.target.checked)}
-              className="w-6 h-6"
-            />
-            <span className="text-lenvpen-text">{texts.dailyReport.goal.didStep}</span>
-          </label>
-
-          {didStep && (
-            <textarea
-              value={stepDescription}
-              onChange={(e) => setStepDescription(e.target.value)}
-              placeholder={texts.dailyReport.goal.description}
-              rows={3}
-              className="w-full p-3 bg-lenvpen-bg text-lenvpen-text rounded-lg resize-none"
-            />
-          )}
-
+        {dep.key === 'phone' && (
           <div>
-            <label className="text-lenvpen-text block mb-2">
-              {texts.dailyReport.goal.rating}: {rating}
+            <label className="text-sm text-lenvpen-muted block mb-2">
+              Экранное время (часов): <span className="text-lenvpen-orange">{value.hours || 0}</span>
+            </label>
+            <input
+              type="number"
+              min="0"
+              max="24"
+              step="0.5"
+              value={value.hours || 0}
+              onChange={(e) => updateDepValue(dep.key, 'hours', parseFloat(e.target.value) || 0)}
+              className="w-full p-3 bg-lenvpen-bg text-lenvpen-text rounded"
+            />
+          </div>
+        )}
+
+        {dep.key === 'alcohol' && (
+          <div>
+            <label className="text-sm text-lenvpen-muted block mb-2">
+              Количество выпитого (напитков): <span className="text-lenvpen-orange">{value.drinks || 0}</span>
+            </label>
+            <input
+              type="number"
+              min="0"
+              value={value.drinks || 0}
+              onChange={(e) => updateDepValue(dep.key, 'drinks', parseInt(e.target.value) || 0)}
+              className="w-full p-3 bg-lenvpen-bg text-lenvpen-text rounded"
+            />
+          </div>
+        )}
+
+        {dep.key === 'gaming' && (
+          <div>
+            <label className="text-sm text-lenvpen-muted block mb-2">
+              Время в играх (часов): <span className="text-lenvpen-orange">{value.hours || 0}</span>
+            </label>
+            <input
+              type="number"
+              min="0"
+              max="24"
+              step="0.5"
+              value={value.hours || 0}
+              onChange={(e) => updateDepValue(dep.key, 'hours', parseFloat(e.target.value) || 0)}
+              className="w-full p-3 bg-lenvpen-bg text-lenvpen-text rounded"
+            />
+          </div>
+        )}
+
+        {dep.key === 'overeating' && (
+          <div>
+            <label className="text-sm text-lenvpen-muted block mb-2">
+              Переедали сегодня?
+            </label>
+            <div className="flex gap-3">
+              <button
+                onClick={() => updateDepValue(dep.key, 'overate', false)}
+                className={`flex-1 py-2 rounded transition-colors ${
+                  !value.overate ? 'bg-lenvpen-orange text-white' : 'bg-lenvpen-bg text-lenvpen-muted'
+                }`}
+              >
+                Нет
+              </button>
+              <button
+                onClick={() => updateDepValue(dep.key, 'overate', true)}
+                className={`flex-1 py-2 rounded transition-colors ${
+                  value.overate ? 'bg-lenvpen-red text-white' : 'bg-lenvpen-bg text-lenvpen-muted'
+                }`}
+              >
+                Да
+              </button>
+            </div>
+          </div>
+        )}
+
+        {dep.key === 'procrastination' && (
+          <div>
+            <label className="text-sm text-lenvpen-muted block mb-2">
+              Потрачено на прокрастинацию (часов): <span className="text-lenvpen-orange">{value.hours || 0}</span>
+            </label>
+            <input
+              type="number"
+              min="0"
+              max="24"
+              step="0.5"
+              value={value.hours || 0}
+              onChange={(e) => updateDepValue(dep.key, 'hours', parseFloat(e.target.value) || 0)}
+              className="w-full p-3 bg-lenvpen-bg text-lenvpen-text rounded"
+            />
+          </div>
+        )}
+
+        {dep.key === 'drugs' && (
+          <div>
+            <label className="text-sm text-lenvpen-muted block mb-2">
+              Употребляли сегодня?
+            </label>
+            <div className="flex gap-3">
+              <button
+                onClick={() => updateDepValue(dep.key, 'used', false)}
+                className={`flex-1 py-2 rounded transition-colors ${
+                  !value.used ? 'bg-lenvpen-orange text-white' : 'bg-lenvpen-bg text-lenvpen-muted'
+                }`}
+              >
+                Нет
+              </button>
+              <button
+                onClick={() => updateDepValue(dep.key, 'used', true)}
+                className={`flex-1 py-2 rounded transition-colors ${
+                  value.used ? 'bg-lenvpen-red text-white' : 'bg-lenvpen-bg text-lenvpen-muted'
+                }`}
+              >
+                Да
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-lenvpen-dark flex items-center justify-center">
+        <div className="text-lenvpen-text">Загрузка...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-lenvpen-dark p-4">
+      <div className="max-w-2xl mx-auto space-y-6">
+        <h1 className="text-3xl font-bold text-lenvpen-text">
+          Дневной отчёт 📋
+        </h1>
+        <p className="text-lenvpen-muted text-sm">
+          Заполните отчёт за сегодня. Система автоматически пересчитает ваши метрики по формулам C3/O3.
+        </p>
+
+        {/* Main metrics */}
+        <div className="bg-lenvpen-card p-4 rounded-lg space-y-4">
+          <h3 className="text-lg font-semibold text-lenvpen-text">Общие показатели</h3>
+          
+          <div>
+            <label className="text-sm text-lenvpen-muted block mb-2">
+              Прогресс к цели: <span className="text-lenvpen-orange">{goalProgress}/10</span>
             </label>
             <input
               type="range"
               min="0"
               max="10"
-              value={rating}
-              onChange={(e) => setRating(parseInt(e.target.value))}
+              value={goalProgress}
+              onChange={(e) => setGoalProgress(parseInt(e.target.value))}
               className="w-full"
             />
-            <div className="flex justify-between text-sm text-lenvpen-muted mt-1">
-              <span>0</span>
-              <span>10</span>
-            </div>
+          </div>
+
+          <div>
+            <label className="text-sm text-lenvpen-muted block mb-2">
+              Настроение: <span className="text-lenvpen-orange">{mood}/10</span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="10"
+              value={mood}
+              onChange={(e) => setMood(parseInt(e.target.value))}
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm text-lenvpen-muted block mb-2">
+              Уровень стресса: <span className="text-lenvpen-orange">{stress}/10</span>
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="10"
+              value={stress}
+              onChange={(e) => setStress(parseInt(e.target.value))}
+              className="w-full"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm text-lenvpen-muted block mb-2">
+              Сон (часов): <span className="text-lenvpen-orange">{sleepHours}</span>
+            </label>
+            <input
+              type="number"
+              min="0"
+              max="24"
+              step="0.5"
+              value={sleepHours}
+              onChange={(e) => setSleepHours(parseFloat(e.target.value))}
+              className="w-full p-3 bg-lenvpen-bg text-lenvpen-text rounded"
+            />
           </div>
         </div>
 
-        {/* Зависимости */}
-        <div className="card space-y-4">
-          <h2 className="text-2xl font-bold text-lenvpen-text">
-            {texts.dailyReport.dependencies.title}
-          </h2>
-
-          {dependencies && dependencies.length > 0 ? (
-            dependencies.map(dep => (
-              <div key={dep.id} className="bg-lenvpen-bg rounded-lg p-4 space-y-3">
-                <h3 className="text-lg font-medium text-lenvpen-text">
-                  {dep.key}
-                </h3>
-
-                {/* Упрощённые поля для MVP */}
-                {dep.key === 'smoking' && (
-                  <>
-                    <label className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        checked={!depData[dep.key]?.did_smoke}
-                        onChange={(e) => handleDepChange(dep.key, 'did_smoke', !e.target.checked)}
-                        className="w-5 h-5"
-                      />
-                      <span className="text-lenvpen-text">Не курил сегодня</span>
-                    </label>
-                    {depData[dep.key]?.did_smoke && (
-                      <input
-                        type="number"
-                        placeholder="Сколько сигарет?"
-                        value={depData[dep.key]?.count || ''}
-                        onChange={(e) => handleDepChange(dep.key, 'count', parseInt(e.target.value) || 0)}
-                        className="w-full p-2 bg-lenvpen-dark text-lenvpen-text rounded"
-                      />
-                    )}
-                  </>
-                )}
-
-                {dep.key === 'phone' && (
-                  <input
-                    type="number"
-                    placeholder="Часов в телефоне"
-                    value={depData[dep.key]?.hours || ''}
-                    onChange={(e) => handleDepChange(dep.key, 'hours', parseInt(e.target.value) || 0)}
-                    className="w-full p-2 bg-lenvpen-dark text-lenvpen-text rounded"
-                  />
-                )}
-
-                {/* Для остальных - простое да/нет */}
-                {!['smoking', 'phone'].includes(dep.key) && (
-                  <label className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={depData[dep.key]?.no_action || false}
-                      onChange={(e) => handleDepChange(dep.key, 'no_action', e.target.checked)}
-                      className="w-5 h-5"
-                    />
-                    <span className="text-lenvpen-text">Не делал сегодня</span>
-                  </label>
-                )}
-              </div>
-            ))
+        {/* Dependencies */}
+        <div className="space-y-3">
+          <h3 className="text-xl font-bold text-lenvpen-text">Ваши зависимости</h3>
+          {userDependencies.length > 0 ? (
+            userDependencies.map(dep => renderDepInput(dep))
           ) : (
-            <div className="text-lenvpen-muted">Нет зависимостей для отслеживания</div>
+            <div className="text-lenvpen-muted text-center py-8">
+              Нет зависимостей для отслеживания. Пройдите опрос сначала.
+            </div>
           )}
         </div>
 
-        {/* Кнопки */}
-        <div className="flex gap-3">
+        {/* Comment */}
+        <div className="bg-lenvpen-card p-4 rounded-lg">
+          <label className="text-sm text-lenvpen-muted block mb-2">
+            Комментарий (необязательно)
+          </label>
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Как прошёл день? Что помогло/помешало?.."
+            rows={3}
+            className="w-full p-3 bg-lenvpen-bg text-lenvpen-text rounded resize-none"
+          />
+        </div>
+
+        {/* Buttons */}
+        <div className="flex gap-3 pb-4">
           <button
             onClick={() => navigate('/dashboard')}
             className="btn-secondary flex-1"
@@ -211,17 +400,17 @@ function DailyReport() {
           </button>
           <button
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={submitting || userDependencies.length === 0}
             className="btn-primary flex-1"
           >
-            {loading ? 'Сохранение...' : texts.dailyReport.btnSubmit}
+            {submitting ? 'Отправка...' : 'Отправить отчёт'}
           </button>
         </div>
       </div>
-      
-      {/* Версия */}
-      <div className="absolute bottom-2 right-2 text-xs text-lenvpen-text opacity-30">
-        {APP_VERSION}
+
+      {/* Version */}
+      <div className="fixed bottom-2 right-2">
+        <span className="text-lenvpen-text/30 text-xs">v{APP_VERSION}</span>
       </div>
     </div>
   );

@@ -1,178 +1,273 @@
-import express from 'express';
-import { supabase } from '../index.js';
-import { 
-  updateDependencyPercents, 
-  updateMainGoalProgress 
-} from '../services/percentCalculator.js';
-
+const express = require('express');
 const router = express.Router();
+const { supabase } = require('../config/supabase');
+const { processDailyReport } = require('../workers/dailyReportWorker');
 
 /**
- * POST /api/daily-report
- * Создать/обновить дневной отчёт
- * Body: { userId, date, for_goal, dependencies_daily, mood }
+ * POST /api/profile/me/daily_report
+ * 
+ * Submit daily report with dependency values
+ * Request body:
+ * {
+ *   goal_progress: number (0-10),
+ *   mood: number (0-10),
+ *   stress: number (0-10),
+ *   sleep_hours: number,
+ *   comment: string,
+ *   dependencies: [
+ *     {
+ *       user_dependency_id: uuid,
+ *       value: object (varies by type),
+ *       slip: boolean
+ *     }
+ *   ]
+ * }
  */
-router.post('/', async (req, res) => {
+router.post('/me/daily_report', async (req, res) => {
   try {
-    const { userId, date, for_goal, dependencies_daily, mood } = req.body;
-
-    if (!userId || !date) {
-      return res.status(400).json({ error: 'userId and date are required' });
+    const userId = req.user.id; // from auth middleware
+    const {
+      goal_progress,
+      mood,
+      stress,
+      sleep_hours,
+      comment,
+      dependencies
+    } = req.body;
+    
+    // Validation
+    if (goal_progress == null || mood == null || stress == null || sleep_hours == null) {
+      return res.status(400).json({
+        error: 'Missing required fields: goal_progress, mood, stress, sleep_hours'
+      });
     }
-
-    // Проверяем, есть ли уже отчёт за эту дату
+    
+    if (!Array.isArray(dependencies) || dependencies.length === 0) {
+      return res.status(400).json({
+        error: 'dependencies array is required and must not be empty'
+      });
+    }
+    
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Check if report for today already exists
     const { data: existingReport } = await supabase
       .from('daily_reports')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('date', date)
-      .single();
-
-    let report;
-
-    if (existingReport) {
-      // Обновляем существующий
-      const { data, error } = await supabase
-        .from('daily_reports')
-        .update({
-          for_goal: for_goal || {},
-          dependencies_daily: dependencies_daily || {},
-          mood: mood || {}
-        })
-        .eq('user_id', userId)
-        .eq('date', date)
-        .select()
-        .single();
-
-      if (error) throw error;
-      report = data;
-    } else {
-      // Создаём новый
-      const { data, error } = await supabase
-        .from('daily_reports')
-        .insert({
-          user_id: userId,
-          date,
-          for_goal: for_goal || {},
-          dependencies_daily: dependencies_daily || {},
-          mood: mood || {}
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      report = data;
-    }
-
-    // Обновляем проценты зависимостей
-    const updateResult = await updateDependencyPercents(
-      userId, 
-      date, 
-      dependencies_daily || {}
-    );
-
-    // Обновляем прогресс главной цели (если есть оценка)
-    if (for_goal && for_goal.rating !== undefined) {
-      await updateMainGoalProgress(userId, date, for_goal.rating);
-    }
-
-    res.json({
-      success: true,
-      report,
-      updates: updateResult.updates
-    });
-
-  } catch (error) {
-    console.error('Daily report error:', error);
-    res.status(500).json({ error: 'Failed to save daily report', details: error.message });
-  }
-});
-
-/**
- * GET /api/daily-report/:userId/:date
- * Получить отчёт за конкретную дату
- */
-router.get('/:userId/:date', async (req, res) => {
-  try {
-    const { userId, date } = req.params;
-
-    const { data: report, error } = await supabase
-      .from('daily_reports')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('date', date)
-      .single();
-
-    if (error && error.code !== 'PGRST116') {
-      throw error;
-    }
-
-    res.json({ report: report || null });
-
-  } catch (error) {
-    console.error('Get daily report error:', error);
-    res.status(500).json({ error: 'Failed to get daily report', details: error.message });
-  }
-});
-
-/**
- * GET /api/daily-report/:userId/latest
- * Получить последний отчёт
- */
-router.get('/:userId/latest', async (req, res) => {
-  try {
-    const { userId } = req.params;
-
-    const { data: report, error } = await supabase
-      .from('daily_reports')
-      .select('*')
-      .eq('user_id', userId)
-      .order('date', { ascending: false })
-      .limit(1)
-      .single();
-
-    if (error && error.code !== 'PGRST116') {
-      throw error;
-    }
-
-    res.json({ report: report || null });
-
-  } catch (error) {
-    console.error('Get latest report error:', error);
-    res.status(500).json({ error: 'Failed to get latest report', details: error.message });
-  }
-});
-
-/**
- * GET /api/daily-report/:userId/check-today
- * Проверить, заполнен ли отчёт сегодня
- */
-router.get('/:userId/check-today', async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const today = new Date().toISOString().split('T')[0];
-
-    const { data: report, error } = await supabase
-      .from('daily_reports')
-      .select('*')
+      .select('id')
       .eq('user_id', userId)
       .eq('date', today)
       .single();
-
-    if (error && error.code !== 'PGRST116') {
-      throw error;
+    
+    if (existingReport) {
+      return res.status(400).json({
+        error: 'Daily report already submitted for today',
+        reportId: existingReport.id
+      });
     }
-
-    res.json({ 
-      has_report_today: !!report,
-      report: report || null,
-      date: today
+    
+    // 1. Insert daily_reports
+    const { data: report, error: reportError } = await supabase
+      .from('daily_reports')
+      .insert({
+        user_id: userId,
+        date: today,
+        goal_progress,
+        mood,
+        stress,
+        sleep_hours,
+        comment: comment || null
+      })
+      .select()
+      .single();
+    
+    if (reportError) {
+      console.error('Error inserting daily_reports:', reportError);
+      return res.status(500).json({ error: 'Failed to create report' });
+    }
+    
+    console.log(`Created daily report: ${report.id}`);
+    
+    // 2. Insert daily_dependency_reports
+    const depReportsToInsert = dependencies.map(dep => ({
+      daily_report_id: report.id,
+      user_dependency_id: dep.user_dependency_id,
+      value: dep.value,
+      slip: dep.slip || false,
+      is_win: false,
+      is_partial_win: false
+    }));
+    
+    const { error: depError } = await supabase
+      .from('daily_dependency_reports')
+      .insert(depReportsToInsert);
+    
+    if (depError) {
+      console.error('Error inserting daily_dependency_reports:', depError);
+      // Rollback: delete the report
+      await supabase.from('daily_reports').delete().eq('id', report.id);
+      return res.status(500).json({ error: 'Failed to create dependency reports' });
+    }
+    
+    console.log(`Inserted ${depReportsToInsert.length} dependency reports`);
+    
+    // 3. Trigger worker to process report asynchronously
+    // For MVP, we'll process synchronously
+    // TODO: Use Bull queue for production
+    try {
+      const result = await processDailyReport(report.id);
+      console.log('Worker result:', result);
+    } catch (workerError) {
+      console.error('Worker error:', workerError);
+      // Don't fail the request - report was saved, processing can be retried
+    }
+    
+    return res.status(201).json({
+      success: true,
+      reportId: report.id,
+      message: 'Daily report submitted successfully'
     });
-
+    
   } catch (error) {
-    console.error('Check today report error:', error);
-    res.status(500).json({ error: 'Failed to check today report', details: error.message });
+    console.error('Error in POST /me/daily_report:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-export default router;
+/**
+ * GET /api/profile/me/metrics
+ * 
+ * Get current metrics and recent history
+ * Query params:
+ *   days: number (default 30) - how many days of history to return
+ */
+router.get('/me/metrics', async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const days = parseInt(req.query.days) || 30;
+    
+    // 1. Get current system metrics
+    const { data: metrics, error: metricsError } = await supabase
+      .from('system_metrics')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+    
+    if (metricsError && metricsError.code !== 'PGRST116') {
+      console.error('Error fetching system_metrics:', metricsError);
+      return res.status(500).json({ error: 'Failed to fetch metrics' });
+    }
+    
+    // 2. Get user dependencies
+    const { data: dependencies, error: depError } = await supabase
+      .from('user_dependencies')
+      .select(`
+        id,
+        dependency_id,
+        base_harm,
+        base_difficulty,
+        base_frequency,
+        base_weight,
+        current_weight,
+        percent,
+        streak,
+        last_slip_at,
+        dependencies (
+          key,
+          title,
+          emoji,
+          description
+        )
+      `)
+      .eq('user_id', userId)
+      .order('created_at', { ascending: true });
+    
+    if (depError) {
+      console.error('Error fetching user_dependencies:', depError);
+      return res.status(500).json({ error: 'Failed to fetch dependencies' });
+    }
+    
+    // 3. Get daily metrics history
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+    const cutoffDateStr = cutoffDate.toISOString().split('T')[0];
+    
+    const { data: history, error: historyError } = await supabase
+      .from('daily_metrics_history')
+      .select('*')
+      .eq('user_id', userId)
+      .gte('date', cutoffDateStr)
+      .order('date', { ascending: true });
+    
+    if (historyError) {
+      console.error('Error fetching daily_metrics_history:', historyError);
+      return res.status(500).json({ error: 'Failed to fetch history' });
+    }
+    
+    // 4. Calculate avatar stage (0-100 → 5 stages)
+    const disciplineHealth = metrics?.discipline_health || 50;
+    let avatarStage = 1;
+    if (disciplineHealth >= 80) avatarStage = 5;
+    else if (disciplineHealth >= 60) avatarStage = 4;
+    else if (disciplineHealth >= 40) avatarStage = 3;
+    else if (disciplineHealth >= 20) avatarStage = 2;
+    
+    return res.json({
+      metrics: {
+        discipline_health: disciplineHealth,
+        total_xp: metrics?.total_xp || 0,
+        last_report_date: metrics?.last_report_date || null,
+        avatar_stage: avatarStage
+      },
+      dependencies: dependencies.map(d => ({
+        id: d.id,
+        key: d.dependencies.key,
+        title: d.dependencies.title,
+        emoji: d.dependencies.emoji,
+        percent: d.percent,
+        current_weight: d.current_weight,
+        streak: d.streak,
+        last_slip_at: d.last_slip_at
+      })),
+      history: history || []
+    });
+    
+  } catch (error) {
+    console.error('Error in GET /me/metrics:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * GET /api/profile/me/daily_report
+ * 
+ * Check if today's report exists
+ */
+router.get('/me/daily_report', async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const today = new Date().toISOString().split('T')[0];
+    
+    const { data: report, error } = await supabase
+      .from('daily_reports')
+      .select('id, date, goal_progress, mood, stress, sleep_hours')
+      .eq('user_id', userId)
+      .eq('date', today)
+      .single();
+    
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error fetching daily_reports:', error);
+      return res.status(500).json({ error: 'Failed to check report' });
+    }
+    
+    return res.json({
+      exists: !!report,
+      report: report || null
+    });
+    
+  } catch (error) {
+    console.error('Error in GET /me/daily_report:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+module.exports = router;

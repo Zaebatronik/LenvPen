@@ -13,6 +13,7 @@ function Survey() {
   const [status, setStatus] = useState('');
   const [position, setPosition] = useState('');
   const [selectedDeps, setSelectedDeps] = useState([]);
+  const [depParams, setDepParams] = useState({}); // { depKey: { harm, difficulty, frequency } }
   const [mainGoal, setMainGoal] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -28,6 +29,18 @@ function Survey() {
     if (step === 3 && selectedDeps.length === 0) {
       alert('Выберите хотя бы одну зависимость');
       return;
+    }
+    if (step === 4) {
+      // Initialize params for selected dependencies
+      const params = {};
+      selectedDeps.forEach(key => {
+        if (!depParams[key]) {
+          params[key] = { harm: 5, difficulty: 5, frequency: 3 };
+        } else {
+          params[key] = depParams[key];
+        }
+      });
+      setDepParams(params);
     }
     setStep(step + 1);
   };
@@ -58,12 +71,17 @@ function Survey() {
         status,
         position,
         dependencies: selectedDeps,
+        depParams, // Include dependency parameters
         mainGoal,
         completed_at: new Date().toISOString()
       };
       localStorage.setItem(`lenvpen_survey_${user.telegram_id}`, JSON.stringify(surveyData));
       
       console.log('Survey data saved for user:', user.telegram_id);
+
+      // TODO: Send to Supabase via API
+      // POST /api/profile/me/dependencies
+      // POST /api/profile/me/goal
 
       // Переходим на dashboard
       setTimeout(() => {
@@ -78,6 +96,16 @@ function Survey() {
     }
   };
 
+  const updateDepParam = (depKey, paramName, value) => {
+    setDepParams(prev => ({
+      ...prev,
+      [depKey]: {
+        ...prev[depKey],
+        [paramName]: value
+      }
+    }));
+  };
+
   return (
     <div className="min-h-screen bg-lenvpen-dark p-4 overflow-hidden">
       <div className="max-w-2xl mx-auto">
@@ -86,11 +114,11 @@ function Survey() {
           <div className="progress-bar">
             <div 
               className="progress-fill" 
-              style={{ width: `${(step / 4) * 100}%` }}
+              style={{ width: `${(step / 5) * 100}%` }}
             />
           </div>
           <div className="text-lenvpen-muted text-sm mt-2 text-center">
-            Шаг {step} из 4
+            Шаг {step} из 5
           </div>
         </div>
 
@@ -189,8 +217,99 @@ function Survey() {
           </div>
         )}
 
-        {/* Шаг 4: Главная цель */}
+        {/* Шаг 4: Параметры зависимостей */}
         {step === 4 && (
+          <div className="space-y-6">
+            <h2 className="text-3xl font-bold text-lenvpen-text">
+              Настройте параметры
+            </h2>
+            <p className="text-lenvpen-muted text-sm">
+              Оцените каждую зависимость по 3 критериям. Это поможет системе точнее рассчитывать прогресс.
+            </p>
+            
+            <div className="space-y-6">
+              {selectedDeps.map(depKey => {
+                const dep = DEPENDENCIES[depKey];
+                const params = depParams[depKey] || { harm: 5, difficulty: 5, frequency: 3 };
+                
+                return (
+                  <div key={depKey} className="bg-lenvpen-card p-4 rounded-lg space-y-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl">{dep.icon}</span>
+                      <span className="text-lenvpen-text font-semibold">{dep.title}</span>
+                    </div>
+                    
+                    {/* Вред для здоровья */}
+                    <div>
+                      <label className="text-sm text-lenvpen-muted block mb-2">
+                        Вред для здоровья/жизни: <span className="text-lenvpen-orange">{params.harm}/10</span>
+                      </label>
+                      <input
+                        type="range"
+                        min="1"
+                        max="10"
+                        value={params.harm}
+                        onChange={(e) => updateDepParam(depKey, 'harm', parseInt(e.target.value))}
+                        className="w-full"
+                      />
+                      <div className="text-xs text-lenvpen-muted mt-1">
+                        {params.harm <= 3 ? 'Легкий вред' : params.harm <= 7 ? 'Средний вред' : 'Сильный вред'}
+                      </div>
+                    </div>
+                    
+                    {/* Сложность избавления */}
+                    <div>
+                      <label className="text-sm text-lenvpen-muted block mb-2">
+                        Сложность избавления: <span className="text-lenvpen-orange">{params.difficulty}/10</span>
+                      </label>
+                      <input
+                        type="range"
+                        min="1"
+                        max="10"
+                        value={params.difficulty}
+                        onChange={(e) => updateDepParam(depKey, 'difficulty', parseInt(e.target.value))}
+                        className="w-full"
+                      />
+                      <div className="text-xs text-lenvpen-muted mt-1">
+                        {params.difficulty <= 3 ? 'Легко бросить' : params.difficulty <= 7 ? 'Среднесложно' : 'Очень сложно'}
+                      </div>
+                    </div>
+                    
+                    {/* Частота в неделю */}
+                    <div>
+                      <label className="text-sm text-lenvpen-muted block mb-2">
+                        Частота в неделю: <span className="text-lenvpen-orange">{params.frequency} дней</span>
+                      </label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="7"
+                        value={params.frequency}
+                        onChange={(e) => updateDepParam(depKey, 'frequency', parseInt(e.target.value))}
+                        className="w-full"
+                      />
+                      <div className="text-xs text-lenvpen-muted mt-1">
+                        {params.frequency === 0 ? 'Редко' : params.frequency <= 2 ? 'Иногда' : params.frequency <= 5 ? 'Часто' : 'Ежедневно'}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            
+            <div className="flex gap-3">
+              <button onClick={handleBack} className="btn-secondary flex-1">
+                {texts.survey.btnBack}
+              </button>
+              <button onClick={handleNext} className="btn-primary flex-1">
+                {texts.survey.btnNext}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Шаг 5: Главная цель */}
+        {step === 5 && (
           <div className="space-y-6">
             <h2 className="text-3xl font-bold text-lenvpen-text">
               {texts.survey.mainGoal.title}
