@@ -19,6 +19,9 @@ export default {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif']
+      },
+      animation: {
+        'bounce-slow': 'bounce 3s ease-in-out infinite',
       }
     },
   },
