@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import { APP_VERSION } from '../config/version';
-import { supabase } from '../services/supabase';
 
 function SetNickname() {
   const navigate = useNavigate();
@@ -38,6 +37,9 @@ function SetNickname() {
 
       // Проверяем, это не тестовый пользователь
       if (user.telegram_id !== 'dev_test' && typeof user.telegram_id === 'number') {
+        // Динамический импорт Supabase только когда нужно
+        const { supabase } = await import('../services/supabase');
+        
         // Сохраняем реального пользователя в Supabase
         const { data, error } = await supabase
           .from('users')
