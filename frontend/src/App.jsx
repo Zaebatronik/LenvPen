@@ -74,64 +74,25 @@ function App() {
 
       console.log('Authenticating user with telegram_id:', telegramId);
       
-      // Импортируем Supabase здесь чтобы избежать ошибок при сборке
-      const { supabase } = await import('./services/supabase');
-      
-      // Проверяем в Supabase, зарегистрирован ли пользователь
-      const { data: existingUser, error: fetchError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('telegram_id', telegramId)
-        .single();
-
-      if (existingUser && !fetchError) {
-        // Пользователь найден в базе - сохраняем в localStorage и store
-        console.log('User found in Supabase:', existingUser);
-        
-        const userData = {
-          id: existingUser.id,
-          telegram_id: existingUser.telegram_id,
-          username: existingUser.username,
-          first_name: existingUser.first_name,
-          last_name: existingUser.last_name,
-          country: existingUser.country,
-          city: existingUser.city,
-          photo_url: existingUser.photo_url,
-          registered: true,
-          registered_at: existingUser.created_at
-        };
-        
-        // Сохраняем в localStorage для быстрого доступа
-        localStorage.setItem(`lenvpen_user_${telegramId}`, JSON.stringify(userData));
-        
-        setUser(userData);
-        setLoading(false);
-        
-        // Проверяем, прошёл ли пользователь опросник
-        const surveyDataString = localStorage.getItem(`lenvpen_survey_${telegramId}`);
-        if (surveyDataString) {
-          navigate('/dashboard');
-        } else {
-          navigate('/survey');
-        }
-        return;
-      }
-      
-      // Пользователь не найден в базе - проверяем localStorage (возможно регистрация не завершена)
+      // Проверяем localStorage сначала (временно не используем Supabase из-за RLS)
+      // TODO: Включить Supabase после настройки RLS политик
       const localUserData = localStorage.getItem(`lenvpen_user_${telegramId}`);
       
       if (localUserData) {
         const userData = JSON.parse(localUserData);
-        console.log('User found in localStorage (registration incomplete):', userData);
+        console.log('User found in localStorage:', userData);
         
         setUser(userData);
         setLoading(false);
         
-        // Если registered: true, но нет в Supabase - очищаем и начинаем заново
+        // Если зарегистрирован - проверяем опросник
         if (userData.registered) {
-          console.log('User marked as registered but not in DB - clearing data');
-          localStorage.removeItem(`lenvpen_user_${telegramId}`);
-          navigate('/welcome');
+          const surveyDataString = localStorage.getItem(`lenvpen_survey_${telegramId}`);
+          if (surveyDataString) {
+            navigate('/dashboard');
+          } else {
+            navigate('/survey');
+          }
         } else {
           // Регистрация не завершена - продолжаем
           navigate('/welcome');
