@@ -10,11 +10,13 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.86.0",
+    "@twa-dev/sdk": "^7.0.1",
+    "axios": "^1.6.2",
+    "dotenv": "^17.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.0",
-    "@twa-dev/sdk": "^7.0.1",
-    "axios": "^1.6.2",
     "zustand": "^4.4.7"
   },
   "devDependencies": {
@@ -29,5 +31,9 @@
     "postcss": "^8.4.32",
     "tailwindcss": "^3.3.6",
     "vite": "^5.0.8"
-  }
+  },
+  "main": "postcss.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
