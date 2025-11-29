@@ -28,6 +28,7 @@ function SurveyNew() {
   const [priorities, setPriorities] = useState([]); // Топ-3
   const [harmLevel, setHarmLevel] = useState(0); // Общий уровень вреда 0-100
   const [complexity, setComplexity] = useState(''); // лёгкая / средняя / адская
+  const [mainGoal, setMainGoal] = useState(''); // Главная цель
   const [saving, setSaving] = useState(false);
 
   // Расчёт динамической шкалы вреда
@@ -66,6 +67,7 @@ function SurveyNew() {
   };
 
   const handleNext = () => {
+    // После приоритетов (selectedDeps.length + 2) переход к главной цели
     setStep(step + 1);
   };
 
@@ -105,6 +107,7 @@ function SurveyNew() {
         priorities,
         harmLevel,
         complexity,
+        mainGoal: mainGoal.trim() || 'Не задана',
         completed_at: new Date().toISOString()
       };
       
@@ -813,11 +816,55 @@ function SurveyNew() {
                 Назад
               </button>
               <button 
-                onClick={handleSave}
-                disabled={priorities.length === 0 || saving}
+                onClick={handleNext}
+                disabled={priorities.length === 0}
                 className="btn-primary flex-1 disabled:opacity-50"
               >
-                {saving ? 'Сохранение...' : 'Завершить диагностику'}
+                Дальше
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Шаг: Главная цель */}
+        {step === selectedDeps.length + 3 && (
+          <div className="space-y-6">
+            <h2 className="text-3xl font-bold text-lenvpen-text">
+              Главная цель
+            </h2>
+            <p className="text-lenvpen-muted">
+              Куда ты идёшь? Что хочешь получить в итоге?
+            </p>
+            
+            <div>
+              <label className="text-lenvpen-text block mb-2 font-medium">
+                Напиши свою главную цель
+              </label>
+              <textarea
+                value={mainGoal}
+                onChange={(e) => setMainGoal(e.target.value)}
+                rows={4}
+                placeholder="Например: Бросить курить и начать заниматься спортом"
+                className="w-full p-4 bg-lenvpen-card text-lenvpen-text rounded-lg border border-lenvpen-orange/20 focus:border-lenvpen-orange outline-none transition-colors resize-none"
+              />
+            </div>
+            
+            <div className="bg-lenvpen-card/60 backdrop-blur-sm rounded-2xl p-6">
+              <p className="text-lenvpen-text text-sm italic">
+                💡 Совет: Чем конкретнее цель — тем проще к ней идти.
+              </p>
+            </div>
+            
+            <div className="flex gap-3">
+              <button onClick={handleBack} className="btn-secondary flex-1">
+                Назад
+              </button>
+              <button 
+                onClick={handleSave}
+                disabled={saving}
+                className="btn-primary flex-1 disabled:opacity-50"
+              >
+                {saving ? 'Сохранение...' : 'Завершить'}
               </button>
             </div>
           </div>
