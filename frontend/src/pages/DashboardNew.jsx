@@ -556,6 +556,10 @@ function DashboardNew() {
               <span className="text-2xl">📝</span>
               <span className="text-xs">Отчёт</span>
             </button>
+            <button className="flex flex-col items-center gap-1 text-lenvpen-muted hover:text-lenvpen-orange transition-colors" onClick={() => navigate('/settings')}>
+              <span className="text-2xl">⚙️</span>
+              <span className="text-xs">Настройки</span>
+            </button>
             <button className="flex flex-col items-center gap-1 text-lenvpen-muted hover:text-lenvpen-orange transition-colors">
               <span className="text-2xl">{currentStage.emoji}</span>
               <span className="text-xs">Аватар</span>

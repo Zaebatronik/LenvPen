@@ -13,6 +13,7 @@ import SurveyNew from './pages/SurveyNew';
 import Dashboard from './pages/Dashboard';
 import DashboardNew from './pages/DashboardNew';
 import DailyReport from './pages/DailyReport';
+import Settings from './pages/Settings';
 
 // Import services
 import { apiClient } from './services/api';
@@ -197,6 +198,7 @@ function App() {
         <Route path="/dashboard" element={<DashboardNew />} />
         <Route path="/dashboard-old" element={<Dashboard />} />
         <Route path="/daily-report" element={<DailyReport />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/welcome" replace />} />
       </Routes>
     </div>
