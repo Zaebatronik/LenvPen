@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import { APP_VERSION } from '../config/version';
+import { supabase } from '../services/supabase';
 
 function SetNickname() {
   const navigate = useNavigate();
@@ -33,13 +34,34 @@ function SetNickname() {
     setLoading(true);
 
     try {
+      // Сохраняем пользователя в Supabase
+      const { data, error } = await supabase
+        .from('users')
+        .insert([
+          {
+            telegram_id: user.telegram_id,
+            username: nickname.trim(),
+            first_name: user.first_name,
+            last_name: user.last_name,
+            country,
+            city,
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
       const userData = {
         ...user,
+        id: data.id,
         country,
         city,
         username: nickname.trim(),
         registered: true,
-        registered_at: new Date().toISOString()
+        registered_at: data.created_at
       };
       
       localStorage.setItem(`lenvpen_user_${user.telegram_id}`, JSON.stringify(userData));
