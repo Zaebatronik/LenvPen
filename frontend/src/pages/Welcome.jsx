@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import WebApp from '@twa-dev/sdk';
 import texts from '../locales/ru.json';
 import { APP_VERSION } from '../config/version';
 
@@ -7,6 +8,16 @@ function Welcome() {
 
   const handleStart = () => {
     navigate('/select-country');
+  };
+
+  const handleClearData = () => {
+    const telegramId = WebApp.initDataUnsafe?.user?.id;
+    if (telegramId) {
+      localStorage.removeItem(`lenvpen_user_${telegramId}`);
+      localStorage.removeItem(`lenvpen_survey_${telegramId}`);
+      console.log('Data cleared for user:', telegramId);
+      window.location.reload();
+    }
   };
 
   return (
@@ -40,6 +51,14 @@ function Welcome() {
           className="btn-primary text-xl w-full max-w-md mx-auto mt-8"
         >
           {texts.welcome.btnStart}
+        </button>
+
+        {/* Кнопка очистки данных (для тестирования) */}
+        <button
+          onClick={handleClearData}
+          className="btn-secondary text-sm w-full max-w-md mx-auto mt-4 opacity-50"
+        >
+          🗑️ Очистить данные (для теста)
         </button>
       </div>
       

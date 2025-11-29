@@ -37,8 +37,17 @@ function App() {
 
   const authenticateUser = async () => {
     try {
-      // Получаем Telegram ID пользователя
-      const telegramId = WebApp.initDataUnsafe?.user?.id || 123456789;
+      // Получаем Telegram ID пользователя (всегда используем реальный ID)
+      const telegramId = WebApp.initDataUnsafe?.user?.id;
+      
+      if (!telegramId) {
+        console.error('Telegram ID not found');
+        setError('Ошибка авторизации Telegram');
+        setLoading(false);
+        return;
+      }
+
+      console.log('Authenticating user with telegram_id:', telegramId);
       
       // Проверяем, есть ли уже зарегистрированный пользователь с этим telegram_id
       const existingUserData = localStorage.getItem(`lenvpen_user_${telegramId}`);
@@ -46,19 +55,23 @@ function App() {
       if (existingUserData) {
         // Пользователь уже зарегистрирован - загружаем его данные
         const userData = JSON.parse(existingUserData);
-        console.log('Existing user found:', telegramId);
+        console.log('Existing user found:', telegramId, userData);
         
         setUser(userData);
         setLoading(false);
         
-        // Проверяем, заполнил ли он опросник
-        const surveyData = localStorage.getItem(`lenvpen_survey_${telegramId}`);
-        if (surveyData) {
-          // Опросник заполнен - идем на Dashboard
-          navigate('/dashboard');
+        // Если регистрация завершена
+        if (userData.registered) {
+          // Проверяем, прошёл ли пользователь опросник
+          const surveyDataString = localStorage.getItem(`lenvpen_survey_${telegramId}`);
+          if (surveyDataString) {
+            navigate('/dashboard');
+          } else {
+            navigate('/survey');
+          }
         } else {
-          // Опросник не заполнен - идем на Survey
-          navigate('/survey');
+          // Регистрация не завершена - продолжаем
+          navigate('/welcome');
         }
       } else {
         // Новый пользователь - создаем базовые данные
