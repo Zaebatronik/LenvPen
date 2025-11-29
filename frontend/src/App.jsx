@@ -11,7 +11,7 @@ import RegistrationSuccess from './pages/RegistrationSuccess';
 import Survey from './pages/Survey';
 import SurveyNew from './pages/SurveyNew';
 import Dashboard from './pages/Dashboard';
-import DashboardNew from './pages/DashboardNew';
+import DashboardNew from './pages/DashboardClean';
 import DailyReport from './pages/DailyReport';
 import DailyTasks from './pages/DailyTasks';
 import Analytics from './pages/Analytics';
