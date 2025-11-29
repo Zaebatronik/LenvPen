@@ -10,8 +10,8 @@
  * 6. Sends notifications
  */
 
-const { supabase } = require('../config/supabase');
-const { evaluateDependencyOutcome, OUTCOMES } = require('./dependencyEvaluators');
+import { supabase } from '../config/supabase.js';
+import { evaluateDependencyOutcome, OUTCOMES } from '../services/dependencyEvaluators.js';
 
 /**
  * Load coefficients from app_config
@@ -337,6 +337,6 @@ async function processDailyReport(reportId) {
   }
 }
 
-module.exports = {
+export {
   processDailyReport
 };

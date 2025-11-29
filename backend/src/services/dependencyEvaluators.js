@@ -269,7 +269,7 @@ async function evaluateDependencyOutcome(client, report, dependencyKey, threshol
   }
 }
 
-module.exports = {
+export {
   OUTCOMES,
   evaluateDependencyOutcome,
   evaluateSmoking,

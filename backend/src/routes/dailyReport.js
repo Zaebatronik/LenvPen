@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import { supabase } from '../config/supabase.js';
+import { processDailyReport } from '../workers/dailyReportWorker.js';
+
 const router = express.Router();
-const { supabase } = require('../config/supabase');
-const { processDailyReport } = require('../workers/dailyReportWorker');
 
 /**
  * POST /api/profile/me/daily_report
@@ -270,4 +271,4 @@ router.get('/me/daily_report', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
