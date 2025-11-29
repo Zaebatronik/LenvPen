@@ -53,16 +53,17 @@ function Survey() {
     setSaving(true);
 
     try {
-      // Сохраняем в localStorage для тестирования
+      // Сохраняем в localStorage с привязкой к telegram_id
       const surveyData = {
         status,
         position,
         dependencies: selectedDeps,
-        mainGoal
+        mainGoal,
+        completed_at: new Date().toISOString()
       };
-      localStorage.setItem('lenvpen_survey', JSON.stringify(surveyData));
+      localStorage.setItem(`lenvpen_survey_${user.telegram_id}`, JSON.stringify(surveyData));
       
-      console.log('Survey data saved locally:', surveyData);
+      console.log('Survey data saved for user:', user.telegram_id);
 
       // Переходим на dashboard
       setTimeout(() => {

@@ -12,19 +12,30 @@ function Dashboard() {
   const [hasTodayReport, setHasTodayReport] = useState(false);
 
   useEffect(() => {
-    // Загружаем данные из localStorage (mock data)
-    const surveyData = localStorage.getItem('lenvpen_survey');
+    if (!user?.telegram_id) {
+      navigate('/welcome');
+      return;
+    }
+
+    // Загружаем данные по telegram_id пользователя
+    const surveyData = localStorage.getItem(`lenvpen_survey_${user.telegram_id}`);
     if (surveyData) {
       try {
         const data = JSON.parse(surveyData);
-        console.log('Loaded survey data:', data);
+        console.log('Loaded survey data for user:', user.telegram_id, data);
       } catch (e) {
         console.error('Parse error:', e);
       }
+    } else {
+      // Если нет данных опросника - редирект на Survey
+      console.log('No survey data, redirecting to survey');
+      navigate('/survey');
+      return;
     }
+    
     setLoading(false);
     setHasTodayReport(false);
-  }, [user]);
+  }, [user, navigate]);
 
   if (loading) {
     return (

@@ -35,24 +35,47 @@ function App() {
 
   const authenticateUser = async () => {
     try {
-      // Получаем initData от Telegram
-      const initData = WebApp.initData;
-
-      // ВСЕГДА используем моковые данные (пока нет backend)
-      console.log('Using mock user data');
+      // Получаем Telegram ID пользователя
+      const telegramId = WebApp.initDataUnsafe?.user?.id || 123456789;
       
-      const mockUser = {
-        id: 'test-user-' + Math.random().toString(36).substr(2, 9),
-        telegram_id: WebApp.initDataUnsafe?.user?.id || 123456789,
-        username: WebApp.initDataUnsafe?.user?.username || 'test_user',
-        first_name: WebApp.initDataUnsafe?.user?.first_name || 'Пользователь',
-        last_name: WebApp.initDataUnsafe?.user?.last_name || '',
-        photo_url: null
-      };
+      // Проверяем, есть ли уже зарегистрированный пользователь с этим telegram_id
+      const existingUserData = localStorage.getItem(`lenvpen_user_${telegramId}`);
       
-      setUser(mockUser);
-      setLoading(false);
-      navigate('/welcome');
+      if (existingUserData) {
+        // Пользователь уже зарегистрирован - загружаем его данные
+        const userData = JSON.parse(existingUserData);
+        console.log('Existing user found:', telegramId);
+        
+        setUser(userData);
+        setLoading(false);
+        
+        // Проверяем, заполнил ли он опросник
+        const surveyData = localStorage.getItem(`lenvpen_survey_${telegramId}`);
+        if (surveyData) {
+          // Опросник заполнен - идем на Dashboard
+          navigate('/dashboard');
+        } else {
+          // Опросник не заполнен - идем на Survey
+          navigate('/survey');
+        }
+      } else {
+        // Новый пользователь - создаем базовые данные
+        console.log('New user, telegram_id:', telegramId);
+        
+        const newUser = {
+          id: `user_${telegramId}`,
+          telegram_id: telegramId,
+          username: WebApp.initDataUnsafe?.user?.username || 'user',
+          first_name: WebApp.initDataUnsafe?.user?.first_name || 'Пользователь',
+          last_name: WebApp.initDataUnsafe?.user?.last_name || '',
+          photo_url: null,
+          registered: false // Флаг регистрации
+        };
+        
+        setUser(newUser);
+        setLoading(false);
+        navigate('/welcome');
+      }
 
     } catch (err) {
       console.error('Authentication error:', err);

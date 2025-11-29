@@ -43,25 +43,32 @@ function Registration() {
     setLoading(true);
 
     try {
-      // В тестовом режиме просто обновляем локальные данные
-      if (import.meta.env.DEV) {
-        console.log('Registration data:', formData);
-        
-        // Обновляем пользователя в store
-        updateUser({
-          ...user,
-          country: formData.country,
-          city: formData.city,
-          username: formData.nickname
-        });
+      // Сохраняем данные регистрации с привязкой к telegram_id
+      const userData = {
+        ...user,
+        country: formData.country,
+        city: formData.city,
+        username: formData.nickname,
+        registered: true,
+        registered_at: new Date().toISOString()
+      };
+      
+      // Сохраняем в localStorage по telegram_id (БЕЗ пароля в открытом виде!)
+      localStorage.setItem(`lenvpen_user_${user.telegram_id}`, JSON.stringify(userData));
+      
+      // Обновляем в store
+      updateUser(userData);
+      
+      console.log('User registered:', user.telegram_id);
 
-        // Переходим к экрану успешной регистрации
+      // Переходим к экрану успешной регистрации
+      setTimeout(() => {
         navigate('/registration-success');
-      } else {
-        // TODO: Здесь будет реальный API-запрос
-        // await apiClient.register(formData);
-        navigate('/registration-success');
-      }
+      }, 500);
+      
+      // TODO: Когда будет backend:
+      // await apiClient.register(formData);
+      
     } catch (error) {
       console.error('Registration error:', error);
       alert('Ошибка регистрации: ' + error.message);
