@@ -58,26 +58,29 @@ function Settings() {
   return (
     <div className="min-h-screen bg-lenvpen-dark pb-20">
       {/* Header */}
-      <div className="sticky top-0 bg-lenvpen-dark/95 backdrop-blur-sm border-b border-lenvpen-border z-10">
-        <div className="p-4 flex items-center justify-between">
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="text-lenvpen-orange"
-          >
-            ← Назад
-          </button>
-          <h1 className="text-xl font-bold text-lenvpen-text">⚙️ Настройки</h1>
-          <div className="w-16"></div>
+      <div className="sticky top-0 bg-lenvpen-dark/95 backdrop-blur-md border-b border-lenvpen-border/50 z-20 shadow-lg">
+        <div className="max-w-2xl mx-auto px-4 py-3 safe-area-inset">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="flex items-center gap-2 text-lenvpen-orange hover:text-lenvpen-red transition-colors active:scale-95 transform"
+            >
+              <span className="text-xl">🏠</span>
+              <span className="hidden sm:inline">Главная</span>
+            </button>
+            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-lenvpen-orange to-lenvpen-red bg-clip-text text-transparent">⚙️ Настройки</h1>
+            <div className="w-20"></div>
+          </div>
         </div>
       </div>
 
       <div className="p-4 space-y-4">
         {/* Информация о пользователе */}
-        <div className="card space-y-2">
-          <h2 className="text-lg font-bold text-lenvpen-text">Информация</h2>
-          <div className="space-y-1 text-sm">
-            <p className="text-lenvpen-muted">
-              Никнейм: <span className="text-lenvpen-text">{user?.username || 'Не указан'}</span>
+        <div className="card space-y-3 bg-gradient-to-br from-lenvpen-card to-lenvpen-bg shadow-lg hover:shadow-xl transition-shadow">
+          <h2 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-lenvpen-orange to-lenvpen-red bg-clip-text text-transparent">Информация</h2>
+          <div className="space-y-2 text-sm">
+            <p className="text-lenvpen-muted flex justify-between items-center">
+              <span>Никнейм:</span> <span className="text-lenvpen-text font-semibold">{user?.username || 'Не указан'}</span>
             </p>
             <p className="text-lenvpen-muted">
               Имя: <span className="text-lenvpen-text">{user?.first_name || 'Не указано'}</span>

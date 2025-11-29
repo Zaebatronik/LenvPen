@@ -72,23 +72,26 @@ function Analytics() {
   };
   
   const AnalystSloth = () => (
-    <div className="card text-center space-y-4 bg-gradient-to-br from-lenvpen-card to-lenvpen-bg border-2 border-lenvpen-orange/30">
-      <div className="text-8xl animate-pulse">
-        {userModel?.emoji || '🦥'}
-      </div>
-      <div className="space-y-2">
-        <h2 className="text-2xl font-bold text-lenvpen-orange">
-          Ленивец-Аналитик
-        </h2>
-        {userModel && (
-          <div className="text-lg text-lenvpen-text font-medium">
-            Ты сегодня: {userModel.name}
+    <div className="relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-lenvpen-orange/10 via-transparent to-lenvpen-red/10 animate-pulse"></div>
+      <div className="card relative text-center space-y-4 bg-gradient-to-br from-lenvpen-card via-lenvpen-card to-lenvpen-bg border-2 border-lenvpen-orange/30 shadow-2xl shadow-lenvpen-orange/20">
+        <div className="text-8xl sm:text-9xl animate-bounce">
+          {userModel?.emoji || '🦥'}
+        </div>
+        <div className="space-y-3">
+          <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-lenvpen-orange to-lenvpen-red bg-clip-text text-transparent">
+            Ленивец-Аналитик
+          </h2>
+          {userModel && (
+            <div className="text-base sm:text-lg text-lenvpen-text font-medium px-4">
+              Ты сегодня: <span className="text-lenvpen-orange font-bold">{userModel.name}</span>
+            </div>
+          )}
+          <div className="bg-gradient-to-r from-lenvpen-bg via-lenvpen-card to-lenvpen-bg rounded-xl p-4 border-l-4 border-lenvpen-orange shadow-lg mx-2">
+            <p className="text-sm sm:text-base text-lenvpen-text italic leading-relaxed">
+              💬 "{slothComment}"
+            </p>
           </div>
-        )}
-        <div className="bg-lenvpen-bg rounded-lg p-4 border-l-4 border-lenvpen-orange">
-          <p className="text-lenvpen-text italic">
-            💬 "{slothComment}"
-          </p>
         </div>
       </div>
     </div>
@@ -265,15 +268,23 @@ function Analytics() {
   };
   
   return (
-    <div className="min-h-screen bg-lenvpen-dark">
+    <div className="min-h-screen bg-gradient-to-b from-lenvpen-dark via-lenvpen-dark to-lenvpen-bg">
       {/* Header */}
-      <div className="sticky top-0 bg-lenvpen-dark/95 backdrop-blur-sm border-b border-lenvpen-border z-10 p-4">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <button onClick={() => navigate('/dashboard')} className="text-lenvpen-orange">
-            ← Назад
-          </button>
-          <h1 className="text-xl font-bold text-lenvpen-text">🧠 Аналитика</h1>
-          <div className="w-16"></div>
+      <div className="sticky top-0 bg-lenvpen-dark/95 backdrop-blur-md border-b border-lenvpen-border/50 z-20 shadow-lg">
+        <div className="max-w-2xl mx-auto px-4 py-3 safe-area-inset">
+          <div className="flex items-center justify-between">
+            <button 
+              onClick={() => navigate('/dashboard')} 
+              className="flex items-center gap-2 text-lenvpen-orange hover:text-lenvpen-red transition-colors active:scale-95 transform"
+            >
+              <span className="text-xl">🏠</span>
+              <span className="hidden sm:inline">Главная</span>
+            </button>
+            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-lenvpen-orange to-lenvpen-red bg-clip-text text-transparent">
+              🧠 Аналитика
+            </h1>
+            <div className="w-20"></div>
+          </div>
         </div>
       </div>
       

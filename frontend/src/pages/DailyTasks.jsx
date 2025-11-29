@@ -177,17 +177,17 @@ function DailyTasks() {
     const [expanded, setExpanded] = useState(false);
     
     return (
-      <div className="card mb-3">
+      <div className="card mb-3 hover:shadow-xl hover:shadow-lenvpen-orange/10 transition-all duration-300 transform hover:scale-[1.02] active:scale-100">
         <div className="flex items-start gap-3">
           <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-lg">{task.type === 'main' ? '🎯' : task.type === 'light' ? '✨' : task.type === 'anti' ? '🚫' : '🎭'}</span>
-              <h3 className="text-lenvpen-text font-medium">{task.title}</h3>
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <span className="text-2xl">{task.type === 'main' ? '🎯' : task.type === 'light' ? '✨' : task.type === 'anti' ? '🚫' : '🎭'}</span>
+              <h3 className="text-lenvpen-text font-semibold text-base sm:text-lg flex-1">{task.title}</h3>
               {task.points && (
-                <span className="text-xs text-lenvpen-orange">+{task.points}⭐</span>
+                <span className="text-xs sm:text-sm font-bold text-lenvpen-orange bg-lenvpen-orange/10 px-2 py-1 rounded-full">+{task.points}⭐</span>
               )}
             </div>
-            <p className="text-sm text-lenvpen-muted mb-2">{task.description}</p>
+            <p className="text-sm text-lenvpen-muted mb-3 leading-relaxed">{task.description}</p>
             
             {!task.status && (
               <div className="flex flex-wrap gap-2">
@@ -291,17 +291,21 @@ function DailyTasks() {
   return (
     <div className="min-h-screen bg-lenvpen-dark pb-24">
       {/* Header */}
-      <div className="sticky top-0 bg-lenvpen-dark/95 backdrop-blur-sm border-b border-lenvpen-border z-10 p-4">
-        <div className="max-w-2xl mx-auto">
-          <div className="flex items-center justify-between mb-3">
-            <button onClick={() => navigate('/dashboard')} className="text-lenvpen-orange">
-              ← Назад
+      <div className="sticky top-0 bg-lenvpen-dark/95 backdrop-blur-md border-b border-lenvpen-border/50 z-20 shadow-lg">
+        <div className="max-w-2xl mx-auto px-4 py-3 safe-area-inset">
+          <div className="flex items-center justify-between">
+            <button 
+              onClick={() => navigate('/dashboard')} 
+              className="flex items-center gap-2 text-lenvpen-orange hover:text-lenvpen-red transition-colors active:scale-95 transform"
+            >
+              <span className="text-xl">🏠</span>
+              <span className="hidden sm:inline">Главная</span>
             </button>
             <div className="text-center">
-              <h1 className="text-xl font-bold text-lenvpen-text">Задания дня</h1>
+              <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-lenvpen-orange to-lenvpen-red bg-clip-text text-transparent">Задания дня</h1>
               <p className="text-xs text-lenvpen-muted">{new Date().toLocaleDateString('ru-RU')}</p>
             </div>
-            <div className="w-16"></div>
+            <div className="w-20"></div>
           </div>
         </div>
       </div>

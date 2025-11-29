@@ -688,14 +688,16 @@ function SurveyNew() {
                 <button
                   key={dep.key}
                   onClick={() => handleDependencyToggle(dep.key)}
-                  className={`p-4 rounded-xl text-left transition-all transform hover:scale-105 ${
+                  className={`p-4 rounded-xl text-left transition-all duration-300 transform hover:scale-105 active:scale-95 ${
                     selectedDeps.includes(dep.key)
-                      ? 'bg-gradient-to-br from-lenvpen-orange to-lenvpen-red text-white shadow-lg'
-                      : 'bg-lenvpen-card/80 text-lenvpen-text hover:bg-lenvpen-card'
+                      ? 'bg-gradient-to-br from-lenvpen-orange via-lenvpen-red to-lenvpen-orange text-white shadow-xl shadow-lenvpen-orange/50 animate-pulse'
+                      : 'bg-gradient-to-br from-lenvpen-card to-lenvpen-bg text-lenvpen-text hover:shadow-lg hover:border-lenvpen-orange/30 border-2 border-transparent'
                   }`}
                 >
-                  <div className="text-4xl mb-2">{dep.icon}</div>
-                  <div className="text-sm font-semibold">{dep.title}</div>
+                  <div className="text-4xl sm:text-5xl mb-2 transition-transform ${
+                    selectedDeps.includes(dep.key) ? 'scale-110' : ''
+                  }">{dep.icon}</div>
+                  <div className="text-xs sm:text-sm font-semibold">{dep.title}</div>
                 </button>
               ))}
             </div>
