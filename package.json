@@ -1,0 +1,7 @@
+{
+  "name": "lenvpen",
+  "version": "0.0.5",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build"
+  }
+}
