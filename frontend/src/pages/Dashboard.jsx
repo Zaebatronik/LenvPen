@@ -142,8 +142,8 @@ function Dashboard() {
       </div>
       
       {/* Версия */}
-      <div className="fixed bottom-4 right-4 text-lenvpen-text/40 text-sm">
-        v{APP_VERSION}
+      <div className="fixed bottom-4 right-4 bg-lenvpen-card px-3 py-1 rounded-lg">
+        <span className="text-lenvpen-text/60 text-sm font-mono">v{APP_VERSION}</span>
       </div>
     </div>
   );
