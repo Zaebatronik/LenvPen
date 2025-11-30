@@ -441,10 +441,10 @@ function DashboardNew() {
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setShowPath(false)}>
           <div className="bg-lenvpen-card rounded-2xl p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
           {/* Декоративный анимированный фон */}
-          <div className="absolute inset-0 bg-gradient-to-br from-lenvpen-orange/5 via-transparent to-lenvpen-red/5 rounded-3xl"></div>
+          <div className="absolute inset-0 bg-lenvpen-accent/5 rounded-3xl"></div>
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-lenvpen-orange/10 rounded-full blur-3xl animate-pulse"></div>
           
-          <div className="bg-gradient-to-br from-lenvpen-card/80 via-lenvpen-card/60 to-lenvpen-bg/80 backdrop-blur-md rounded-3xl p-8 border-2 border-lenvpen-orange/30 relative overflow-hidden shadow-2xl">
+          <div className="bg-lenvpen-card/80 backdrop-blur-md rounded-3xl p-8 border-2 border-lenvpen-accent/30 relative overflow-hidden shadow-2xl shadow-lenvpen-accent/10">
             <div className="relative z-10 space-y-6">
               
               {/* Огромный центральный ленивец с SVG круговым прогрессом */}
@@ -484,15 +484,15 @@ function DashboardNew() {
                   </svg>
                   
                   {/* Центральный аватар ленивца - ОГРОМНЫЙ */}
-                  <div className="w-56 h-56 sm:w-64 sm:h-64 rounded-full bg-gradient-to-br from-lenvpen-orange/20 via-lenvpen-card/80 to-lenvpen-red/20 border-4 border-lenvpen-orange/50 flex items-center justify-center shadow-2xl shadow-lenvpen-orange/40 relative overflow-hidden">
+                  <div className="w-56 h-56 sm:w-64 sm:h-64 rounded-full bg-lenvpen-card/80 border-4 border-lenvpen-accent/50 flex items-center justify-center shadow-2xl shadow-lenvpen-accent/40 relative overflow-hidden">
                     {/* Внутреннее свечение */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-lenvpen-orange/10 to-transparent"></div>
+                    <div className="absolute inset-0 bg-lenvpen-accent/10"></div>
                     
                     {/* Ленивец - анимированный */}
                     <span className="text-9xl sm:text-[10rem] animate-float relative z-10">{currentStage.emoji}</span>
                     
                     {/* Бейдж уровня внизу */}
-                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-lenvpen-orange via-lenvpen-red to-lenvpen-orange px-6 py-2 rounded-full border-2 border-lenvpen-card shadow-xl">
+                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-lenvpen-accent px-6 py-2 rounded-full border-2 border-lenvpen-card shadow-xl">
                       <span className="text-sm font-black text-white uppercase tracking-wider">
                         Уровень {currentStage.level}
                       </span>
@@ -502,7 +502,7 @@ function DashboardNew() {
                 
                 {/* Процент прогресса - ОГРОМНЫЙ */}
                 <div className="mt-10 text-center">
-                  <div className="text-7xl sm:text-8xl font-black bg-gradient-to-r from-lenvpen-orange via-lenvpen-red to-lenvpen-orange bg-clip-text text-transparent animate-pulse">
+                  <div className="text-7xl sm:text-8xl font-black text-lenvpen-accent animate-pulse">
                     {Math.round(progress)}%
                   </div>
                   <div className="text-sm text-lenvpen-muted uppercase tracking-widest mt-2 font-semibold">
@@ -516,7 +516,7 @@ function DashboardNew() {
                 {/* Треугольник пузыря */}
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-b-[18px] border-b-lenvpen-orange/60"></div>
                 
-                <div className="bg-gradient-to-br from-lenvpen-orange/15 via-lenvpen-card/50 to-lenvpen-red/15 backdrop-blur-sm rounded-2xl p-6 border-2 border-lenvpen-orange/50 shadow-xl">
+                <div className="bg-lenvpen-card/50 backdrop-blur-sm rounded-2xl p-6 border-2 border-lenvpen-accent/50 shadow-xl">
                   <p className="text-lenvpen-text text-center text-base sm:text-lg font-medium italic leading-relaxed">
                     💬 "{slothComment || currentStage.text}"
                   </p>
@@ -540,7 +540,7 @@ function DashboardNew() {
         </div>
 
         {/* Главная цель (Block C) */}
-        <div className="bg-gradient-to-br from-lenvpen-orange/20 to-lenvpen-red/20 backdrop-blur-sm rounded-3xl p-6 border-2 border-lenvpen-orange">
+        <div className="bg-lenvpen-card/40 backdrop-blur-sm rounded-3xl p-6 border-2 border-lenvpen-accent">
           <div className="flex items-start gap-4">
             <span className="text-5xl">🎯</span>
             <div className="flex-1">
@@ -551,8 +551,8 @@ function DashboardNew() {
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-2 bg-lenvpen-bg/50 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-gradient-to-r from-lenvpen-orange to-lenvpen-red rounded-full"
-                    style={{ width: `${Math.min(progress, 100)}%` }}
+                    className="h-full bg-lenvpen-accent rounded-full"
+                    style={{ width: `${Math.min(goalProgress, 100)}%` }}
                   />
                 </div>
                 <span className="text-sm text-lenvpen-orange font-bold">{Math.round(progress)}%</span>
@@ -564,14 +564,32 @@ function DashboardNew() {
           </div>
         </div>
 
-        {/* Кнопка дневного отчёта */}
-        <button
-          onClick={() => navigate('/daily-report')}
-          className="w-full bg-gradient-to-r from-lenvpen-orange to-lenvpen-red text-white py-5 rounded-2xl font-bold text-xl shadow-2xl shadow-lenvpen-red/30 active:scale-95 transition-transform flex items-center justify-center gap-3"
-        >
-          <span>📋</span>
-          <span>Заполнить дневной отчёт</span>
-        </button>
+        {/* Кнопки действий в строку */}
+        <div className="grid grid-cols-3 gap-3">
+          <button
+            onClick={() => navigate('/daily-tasks')}
+            className="bg-lenvpen-card hover:bg-lenvpen-card/80 border border-lenvpen-border text-lenvpen-text py-4 rounded-xl font-semibold transition-all hover:border-lenvpen-accent/50 active:scale-95 flex flex-col items-center gap-2"
+          >
+            <span className="text-2xl">✅</span>
+            <span className="text-sm">Задания</span>
+          </button>
+          
+          <button
+            onClick={() => navigate('/daily-report')}
+            className="bg-lenvpen-accent hover:bg-lenvpen-accent/90 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-lenvpen-accent/20 active:scale-95 flex flex-col items-center gap-2"
+          >
+            <span className="text-2xl">📋</span>
+            <span className="text-sm">Отчёт дня</span>
+          </button>
+          
+          <button
+            onClick={() => navigate('/analytics')}
+            className="bg-lenvpen-card hover:bg-lenvpen-card/80 border border-lenvpen-border text-lenvpen-text py-4 rounded-xl font-semibold transition-all hover:border-lenvpen-accent/50 active:scale-95 flex flex-col items-center gap-2"
+          >
+            <span className="text-2xl">📊</span>
+            <span className="text-sm">Аналитика</span>
+          </button>
+        </div>
 
         {/* Карточки зависимостей (Block C) */}
         <div className="space-y-3">
@@ -624,7 +642,7 @@ function DashboardNew() {
                 {/* Прогресс-бар */}
                 <div className="h-2 bg-lenvpen-bg rounded-full overflow-hidden mb-2">
                   <div 
-                    className="h-full bg-gradient-to-r from-lenvpen-orange to-lenvpen-red rounded-full"
+                    className="h-full bg-lenvpen-accent rounded-full"
                     style={{ width: `${dep.progress}%` }}
                   />
                 </div>
@@ -660,7 +678,7 @@ function DashboardNew() {
               <div className="text-sm text-lenvpen-muted mb-2">Успешные дни:</div>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-6 bg-lenvpen-bg rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-lenvpen-green to-lenvpen-green/50" style={{ width: '30%' }}></div>
+                  <div className="h-full bg-lenvpen-green" style={{ width: '30%' }}></div>
                 </div>
                 <span className="text-lenvpen-text font-bold">3 дня</span>
               </div>
@@ -673,7 +691,7 @@ function DashboardNew() {
                 <div className="text-sm text-lenvpen-muted mb-2">Топ-зависимость: {dependencies[0].title}</div>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 h-6 bg-lenvpen-bg rounded-full overflow-hidden">
-                    <div className="h-full bg-gradient-to-r from-lenvpen-red to-lenvpen-orange" style={{ width: '72%' }}></div>
+                    <div className="h-full bg-lenvpen-red" style={{ width: '72%' }}></div>
                   </div>
                   <span className="text-lenvpen-red font-bold">72% вред</span>
                 </div>
