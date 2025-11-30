@@ -20,6 +20,7 @@ import DailyReportNew from './pages/DailyReportNew';
 import Calendar from './pages/Calendar';
 import Progress from './pages/Progress';
 import Dependencies from './pages/Dependencies';
+import ExplanationScreens from './pages/ExplanationScreens';
 import DailyTasks from './pages/DailyTasks';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
@@ -132,13 +133,16 @@ function App() {
         setUser(userData);
         setLoading(false);
         
-        // Если зарегистрирован - проверяем онбординг и опросник
+        // Если зарегистрирован - проверяем онбординг, опросник и объяснение
         if (userData.registered) {
           const onboardingCompleted = localStorage.getItem(`lenvpen_onboarding_completed_${telegramId}`);
           const surveyDataString = localStorage.getItem(`lenvpen_survey_${telegramId}`);
+          const explanationCompleted = localStorage.getItem(`lenvpen_explanation_completed_${telegramId}`);
           
-          if (surveyDataString) {
+          if (surveyDataString && explanationCompleted) {
             navigate('/dashboard');
+          } else if (surveyDataString && !explanationCompleted) {
+            navigate('/explanation');
           } else if (onboardingCompleted) {
             navigate('/survey');
           } else {
@@ -218,6 +222,7 @@ function App() {
         <Route path="/calendar" element={<Calendar />} />
         <Route path="/progress" element={<Progress />} />
         <Route path="/dependencies" element={<Dependencies />} />
+        <Route path="/explanation" element={<ExplanationScreens />} />
         <Route path="/daily-tasks" element={<DailyTasks />} />
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/settings" element={<Settings />} />

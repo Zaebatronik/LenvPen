@@ -33,12 +33,21 @@ function Settings() {
         }
       }
 
-      // Удаляем все локальные данные
-      localStorage.removeItem(`lenvpen_user_${user.telegram_id}`);
-      localStorage.removeItem(`lenvpen_survey_${user.telegram_id}`);
-      localStorage.removeItem(`lenvpen_daily_reports_${user.telegram_id}`);
+      // Удаляем ВСЕ данные пользователя из localStorage
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.includes(user.telegram_id.toString())) {
+          keysToRemove.push(key);
+        }
+      }
       
-      console.log('All local data deleted');
+      keysToRemove.forEach(key => {
+        localStorage.removeItem(key);
+        console.log('Removed:', key);
+      });
+      
+      console.log(`All data deleted: ${keysToRemove.length} keys removed`);
 
       // Показываем уведомление
       WebApp.showAlert('Аккаунт удалён. Данные стёрты. Начни заново!', () => {

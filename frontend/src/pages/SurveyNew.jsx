@@ -117,7 +117,8 @@ function SurveyNew() {
       // TODO: POST /api/profile/me/dependencies
       
       setTimeout(() => {
-        navigate('/dashboard');
+        // Перенаправляем на экраны объяснения после завершения опроса
+        navigate('/explanation');
       }, 500);
       
     } catch (error) {
