@@ -483,30 +483,39 @@ function DashboardNew() {
                     </defs>
                   </svg>
                   
-                  {/* Центральный аватар ленивца - ОГРОМНЫЙ */}
-                  <div className="w-56 h-56 sm:w-64 sm:h-64 rounded-full bg-lenvpen-card/80 border-4 border-lenvpen-accent/50 flex items-center justify-center shadow-2xl shadow-lenvpen-accent/40 relative overflow-hidden">
+                  {/* Центральный аватар ленивца - КОМПАКТНЫЙ */}
+                  <div className="w-48 h-48 rounded-full bg-lenvpen-card/80 border-4 border-lenvpen-accent/50 flex flex-col items-center justify-center shadow-2xl shadow-lenvpen-accent/40 relative overflow-hidden">
                     {/* Внутреннее свечение */}
                     <div className="absolute inset-0 bg-lenvpen-accent/10"></div>
                     
                     {/* Ленивец - анимированный */}
-                    <span className="text-9xl sm:text-[10rem] animate-float relative z-10">{currentStage.emoji}</span>
+                    <span className="text-6xl animate-float relative z-10 mb-2">{currentStage.emoji}</span>
                     
-                    {/* Бейдж уровня внизу */}
-                    <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-lenvpen-accent px-6 py-2 rounded-full border-2 border-lenvpen-card shadow-xl">
-                      <span className="text-sm font-black text-white uppercase tracking-wider">
+                    {/* Процент внутри круга */}
+                    <div className="relative z-10 text-center">
+                      <div className="text-4xl font-black text-lenvpen-accent">
+                        {Math.round(progress)}%
+                      </div>
+                      <div className="text-xs text-lenvpen-muted uppercase tracking-wide mt-1">
                         Уровень {currentStage.level}
-                      </span>
+                      </div>
                     </div>
                   </div>
                 </div>
                 
-                {/* Процент прогресса - ОГРОМНЫЙ */}
-                <div className="mt-10 text-center">
-                  <div className="text-7xl sm:text-8xl font-black text-lenvpen-accent animate-pulse">
-                    {Math.round(progress)}%
-                  </div>
-                  <div className="text-sm text-lenvpen-muted uppercase tracking-widest mt-2 font-semibold">
-                    Общий прогресс
+                {/* Главная цель и дни до цели под кругом */}
+                <div className="mt-6 text-center max-w-md mx-auto">
+                  <div className="bg-lenvpen-card/50 backdrop-blur-sm rounded-2xl p-5 border border-lenvpen-accent/30">
+                    <div className="text-xs text-lenvpen-muted uppercase tracking-wide mb-2">Главная цель</div>
+                    <p className="text-lenvpen-text text-lg font-semibold leading-tight">
+                      {surveyData?.mainGoal || 'Цель не указана'}
+                    </p>
+                    <div className="mt-4 pt-4 border-t border-lenvpen-border/30">
+                      <div className="text-3xl font-bold text-lenvpen-accent">
+                        {surveyData?.goalDays || 90}
+                      </div>
+                      <div className="text-sm text-lenvpen-muted mt-1">дней до цели</div>
+                    </div>
                   </div>
                 </div>
               </div>

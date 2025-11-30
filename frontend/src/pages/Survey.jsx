@@ -15,6 +15,7 @@ function Survey() {
   const [selectedDeps, setSelectedDeps] = useState([]);
   const [depParams, setDepParams] = useState({}); // { depKey: { harm, difficulty, frequency } }
   const [mainGoal, setMainGoal] = useState('');
+  const [goalDays, setGoalDays] = useState(90);
   const [saving, setSaving] = useState(false);
 
   const handleNext = () => {
@@ -73,6 +74,7 @@ function Survey() {
         dependencies: selectedDeps,
         depParams, // Include dependency parameters
         mainGoal,
+        goalDays,
         completed_at: new Date().toISOString()
       };
       localStorage.setItem(`lenvpen_survey_${user.telegram_id}`, JSON.stringify(surveyData));
@@ -317,6 +319,30 @@ function Survey() {
             <p className="text-lenvpen-orange">
               {texts.survey.mainGoal.instruction}
             </p>
+            
+            {/* Выбор срока цели */}
+            <div className="space-y-3">
+              <label className="text-lg font-semibold text-lenvpen-text block">
+                Сколько дней дать себе на достижение цели?
+              </label>
+              <div className="grid grid-cols-3 gap-3">
+                {[30, 60, 90].map(days => (
+                  <button
+                    key={days}
+                    onClick={() => setGoalDays(days)}
+                    className={`p-4 rounded-xl text-center transition-all ${
+                      goalDays === days
+                        ? 'bg-lenvpen-accent text-white shadow-lg shadow-lenvpen-accent/20 scale-105'
+                        : 'bg-lenvpen-card text-lenvpen-text hover:bg-lenvpen-card/80 border border-lenvpen-border'
+                    }`}
+                  >
+                    <div className="text-3xl font-bold">{days}</div>
+                    <div className="text-sm mt-1 opacity-80">дней</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+            
             <textarea
               value={mainGoal}
               onChange={(e) => setMainGoal(e.target.value)}
