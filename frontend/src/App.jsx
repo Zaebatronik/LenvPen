@@ -13,6 +13,7 @@ import Survey from './pages/Survey';
 import SurveyNew from './pages/SurveyNew';
 import Dashboard from './pages/Dashboard';
 import DashboardNew from './pages/DashboardClean';
+import DashboardT3 from './pages/DashboardT3';
 import DailyReport from './pages/DailyReport';
 import DailyReportEnhanced from './pages/DailyReportEnhanced';
 import DailyReportT3 from './pages/DailyReportT3';
@@ -213,7 +214,8 @@ function App() {
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/survey" element={<SurveyNew />} />
         <Route path="/survey-old" element={<Survey />} />
-        <Route path="/dashboard" element={<DashboardNew />} />
+        <Route path="/dashboard" element={<DashboardT3 />} />
+        <Route path="/dashboard-old" element={<DashboardNew />} />
         <Route path="/dashboard-old" element={<Dashboard />} />
         <Route path="/daily-report" element={<DailyReportNew />} />
         <Route path="/daily-report-t3" element={<DailyReportT3 />} />
