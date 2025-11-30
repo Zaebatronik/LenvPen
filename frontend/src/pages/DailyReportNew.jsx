@@ -334,10 +334,16 @@ function DailyReportNew() {
           </div>
           {sleepTime && wakeTime && (() => {
             const sleep = new Date(`2000-01-01T${sleepTime}`);
-            const wake = new Date(`2000-01-0${wake < sleep ? '2' : '1'}T${wakeTime}`);
+            let wake = new Date(`2000-01-01T${wakeTime}`);
+            
+            // Если время пробуждения раньше времени сна, значит проснулся на следующий день
+            if (wake < sleep) {
+              wake = new Date(`2000-01-02T${wakeTime}`);
+            }
+            
             const diff = (wake - sleep) / (1000 * 60 * 60);
-            const hours = Math.floor(Math.abs(diff));
-            const minutes = Math.round((Math.abs(diff) - hours) * 60);
+            const hours = Math.floor(diff);
+            const minutes = Math.round((diff - hours) * 60);
             return (
               <div className="mt-4 bg-lenvpen-bg rounded-xl p-4 text-center">
                 <div className="text-2xl font-black text-lenvpen-accent">
