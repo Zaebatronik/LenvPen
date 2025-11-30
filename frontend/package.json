@@ -1,6 +1,6 @@
 {
   "name": "lenvpen-webapp",
-  "version": "0.5.6",
+  "version": "0.6.0",
   "type": "module",
   "description": "Telegram WebApp для Лень-в-Пень",
   "scripts": {

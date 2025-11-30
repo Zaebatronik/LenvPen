@@ -13,6 +13,7 @@ import SurveyNew from './pages/SurveyNew';
 import Dashboard from './pages/Dashboard';
 import DashboardNew from './pages/DashboardClean';
 import DailyReport from './pages/DailyReport';
+import DailyReportEnhanced from './pages/DailyReportEnhanced';
 import DailyTasks from './pages/DailyTasks';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
@@ -199,7 +200,8 @@ function App() {
         <Route path="/survey-old" element={<Survey />} />
         <Route path="/dashboard" element={<DashboardNew />} />
         <Route path="/dashboard-old" element={<Dashboard />} />
-        <Route path="/daily-report" element={<DailyReport />} />
+        <Route path="/daily-report" element={<DailyReportEnhanced />} />
+        <Route path="/daily-report-old" element={<DailyReport />} />
         <Route path="/daily-tasks" element={<DailyTasks />} />
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/settings" element={<Settings />} />
