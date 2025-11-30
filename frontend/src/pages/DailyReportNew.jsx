@@ -29,13 +29,20 @@ function DailyReportNew() {
   // Проверяем, заполнен ли уже отчёт за сегодня
   const today = new Date().toISOString().split('T')[0];
   const todayReport = localStorage.getItem(`lenvpen_report_${user.telegram_id}_${today}`);
-  const [isReportLocked, setIsReportLocked] = useState(!!todayReport);
   
   // Состояния для 2 колонок
   const [dependenciesReport, setDependenciesReport] = useState({});
   const [selectedActions, setSelectedActions] = useState([]);
   const [dayComment, setDayComment] = useState('');
+  
+  // Состояния для времени сна
+  const [sleepTime, setSleepTime] = useState('');
+  const [wakeTime, setWakeTime] = useState('');
+  
+  // Состояния для модалок и финализации
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isFinalized, setIsFinalized] = useState(false);
+  const [showSaveNotification, setShowSaveNotification] = useState(false);
 
   // Инициализация зависимостей из survey
   useEffect(() => {
@@ -48,13 +55,16 @@ function DailyReportNew() {
     }
   }, []);
 
-  // Если отчёт уже заполнен, показываем его в режиме просмотра
+  // Загружаем сохранённый отчёт за сегодня (если есть)
   useEffect(() => {
     if (todayReport) {
       const report = JSON.parse(todayReport);
       setDependenciesReport(report.dependencies || {});
       setSelectedActions(report.actions || []);
       setDayComment(report.comment || '');
+      setSleepTime(report.sleepTime || '');
+      setWakeTime(report.wakeTime || '');
+      setIsFinalized(report.finalized || false);
     }
   }, [todayReport]);
 
@@ -97,41 +107,70 @@ function DailyReportNew() {
     return score;
   };
 
-  // Подтверждение отчёта
-  const handleConfirmReport = () => {
+  // Автосохранение (можно вызывать многократно в течение дня)
+  const handleSaveProgress = () => {
     const dayScore = calculateDayScore();
     const report = {
       date: today,
       dependencies: dependenciesReport,
       actions: selectedActions,
       comment: dayComment,
+      sleepTime,
+      wakeTime,
       score: dayScore,
+      finalized: false,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    // Сохраняем отчёт (без блокировки)
+    localStorage.setItem(`lenvpen_report_${user.telegram_id}_${today}`, JSON.stringify(report));
+    
+    // Показываем уведомление
+    setShowSaveNotification(true);
+    setTimeout(() => setShowSaveNotification(false), 2000);
+  };
+  
+  // Финальное подтверждение отчёта (блокирует редактирование)
+  const handleFinalizeReport = () => {
+    const dayScore = calculateDayScore();
+    const report = {
+      date: today,
+      dependencies: dependenciesReport,
+      actions: selectedActions,
+      comment: dayComment,
+      sleepTime,
+      wakeTime,
+      score: dayScore,
+      finalized: true,
       timestamp: new Date().toISOString()
     };
     
-    // Сохраняем отчёт (блокируем изменения)
+    // Сохраняем финальный отчёт
     localStorage.setItem(`lenvpen_report_${user.telegram_id}_${today}`, JSON.stringify(report));
     
     // Обновляем общий прогресс
     const allReportsKey = `lenvpen_all_reports_${user.telegram_id}`;
     const allReports = JSON.parse(localStorage.getItem(allReportsKey) || '[]');
-    allReports.push(report);
-    localStorage.setItem(allReportsKey, JSON.stringify(allReports));
     
-    setIsReportLocked(true);
+    // Удаляем старую версию отчёта за сегодня, если есть
+    const filteredReports = allReports.filter(r => r.date !== today);
+    filteredReports.push(report);
+    localStorage.setItem(allReportsKey, JSON.stringify(filteredReports));
+    
+    setIsFinalized(true);
     setShowConfirmModal(false);
     
     // Переходим на главную с обновлённым ленивцем
     setTimeout(() => navigate('/dashboard'), 500);
   };
 
-  if (isReportLocked) {
+  if (isFinalized) {
     return (
       <div className="min-h-screen bg-lenvpen-bg flex flex-col items-center justify-center p-6">
-        <div className="text-8xl mb-6">🔒</div>
-        <h1 className="text-3xl font-bold text-lenvpen-text mb-3">Отчёт за сегодня уже заполнен</h1>
+        <div className="text-8xl mb-6">🎉</div>
+        <h1 className="text-3xl font-bold text-lenvpen-text mb-3">День завершён!</h1>
         <p className="text-lenvpen-muted text-center max-w-md mb-8">
-          Вы уже отправили отчёт за {new Date().toLocaleDateString('ru-RU')}. Изменить его нельзя.
+          Отчёт за {new Date().toLocaleDateString('ru-RU')} зафиксирован. Увидимся завтра! 🦥
         </p>
         <button
           onClick={() => navigate('/dashboard')}
@@ -256,15 +295,58 @@ function DailyReportNew() {
         </div>
 
         {/* Комментарий дня */}
-        <div className="bg-lenvpen-card border border-lenvpen-border rounded-2xl p-6 mb-8">
+        <div className="bg-lenvpen-card border border-lenvpen-border rounded-2xl p-6 mb-6">
           <h3 className="text-lg font-bold text-lenvpen-text mb-3">💭 Комментарий дня</h3>
           <textarea
             value={dayComment}
             onChange={(e) => setDayComment(e.target.value)}
             placeholder="Как прошёл день? (необязательно)"
-            disabled={isReportLocked}
             className="w-full bg-lenvpen-bg border border-lenvpen-border rounded-xl px-4 py-3 text-lenvpen-text resize-none h-24"
           />
+        </div>
+
+        {/* Время сна */}
+        <div className="bg-lenvpen-card border border-lenvpen-border rounded-2xl p-6 mb-8">
+          <h3 className="text-lg font-bold text-lenvpen-text mb-4">😴 Режим сна</h3>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-lenvpen-text mb-2">
+                Во сколько лег спать?
+              </label>
+              <input
+                type="time"
+                value={sleepTime}
+                onChange={(e) => setSleepTime(e.target.value)}
+                className="w-full bg-lenvpen-bg border border-lenvpen-border rounded-xl px-4 py-3 text-lenvpen-text"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-lenvpen-text mb-2">
+                Во сколько проснулся?
+              </label>
+              <input
+                type="time"
+                value={wakeTime}
+                onChange={(e) => setWakeTime(e.target.value)}
+                className="w-full bg-lenvpen-bg border border-lenvpen-border rounded-xl px-4 py-3 text-lenvpen-text"
+              />
+            </div>
+          </div>
+          {sleepTime && wakeTime && (() => {
+            const sleep = new Date(`2000-01-01T${sleepTime}`);
+            const wake = new Date(`2000-01-0${wake < sleep ? '2' : '1'}T${wakeTime}`);
+            const diff = (wake - sleep) / (1000 * 60 * 60);
+            const hours = Math.floor(Math.abs(diff));
+            const minutes = Math.round((Math.abs(diff) - hours) * 60);
+            return (
+              <div className="mt-4 bg-lenvpen-bg rounded-xl p-4 text-center">
+                <div className="text-2xl font-black text-lenvpen-accent">
+                  {hours}ч {minutes}мин
+                </div>
+                <div className="text-xs text-lenvpen-muted mt-1">Продолжительность сна</div>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Итог дня */}
@@ -290,13 +372,20 @@ function DailyReportNew() {
               <div className="text-xs text-lenvpen-muted mt-1">Изменение</div>
             </div>
           </div>
-          <button
-            onClick={() => setShowConfirmModal(true)}
-            disabled={isReportLocked}
-            className="w-full py-4 rounded-xl font-bold text-lg bg-lenvpen-accent text-white hover:bg-lenvpen-accent/90 transition-all shadow-lg shadow-lenvpen-accent/20 disabled:opacity-50"
-          >
-            Подтвердить отчёт
-          </button>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={handleSaveProgress}
+              className="py-4 rounded-xl font-bold text-base bg-lenvpen-card border-2 border-lenvpen-accent/50 text-lenvpen-text hover:bg-lenvpen-accent/10 transition-all"
+            >
+              💾 Сохранить
+            </button>
+            <button
+              onClick={() => setShowConfirmModal(true)}
+              className="py-4 rounded-xl font-bold text-base bg-lenvpen-accent text-white hover:bg-lenvpen-accent/90 transition-all shadow-lg shadow-lenvpen-accent/20"
+            >
+              ✅ Завершить день
+            </button>
+          </div>
         </div>
       </div>
 
@@ -306,10 +395,10 @@ function DailyReportNew() {
           <div className="bg-lenvpen-card border-2 border-lenvpen-accent rounded-3xl p-8 max-w-md w-full">
             <div className="text-6xl text-center mb-6">⚠️</div>
             <h2 className="text-2xl font-bold text-lenvpen-text text-center mb-4">
-              Подтвердить отчёт?
+              Завершить день?
             </h2>
             <p className="text-lenvpen-muted text-center mb-8">
-              После подтверждения отчёт <span className="text-lenvpen-accent font-bold">нельзя будет изменить</span>. Проценты обновятся, и ленивец отреагирует на ваш день.
+              После завершения дня отчёт будет <span className="text-lenvpen-accent font-bold">заморожен</span> и его нельзя будет изменить. Проценты обновятся, и ленивец отреагирует на ваш день.
             </p>
             
             <div className="bg-lenvpen-bg rounded-xl p-4 mb-6">
@@ -329,12 +418,22 @@ function DailyReportNew() {
                 Отмена
               </button>
               <button
-                onClick={handleConfirmReport}
+                onClick={handleFinalizeReport}
                 className="flex-1 py-3 rounded-xl font-semibold bg-lenvpen-accent text-white hover:bg-lenvpen-accent/90 transition-all"
               >
-                Подтвердить
+                Завершить
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Уведомление о сохранении */}
+      {showSaveNotification && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 animate-bounce">
+          <div className="bg-lenvpen-accent text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+            <span className="text-2xl">✅</span>
+            <span className="font-bold">Прогресс сохранён!</span>
           </div>
         </div>
       )}
