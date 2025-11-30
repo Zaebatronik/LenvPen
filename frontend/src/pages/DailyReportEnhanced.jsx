@@ -186,12 +186,27 @@ function DailyReportEnhanced() {
       dependencies: dependencyValues,
       usefulActions,
       additionalEvents,
-      userId: user.telegram_id
+      userId: user.telegram_id,
+      progressDelta: slothState.progressDelta // Добавляем дельту прогресса
     };
     
     // Анализ
     const result = analyzeDailyReport(reportData);
+    result.goalImpact = slothState.progressDelta; // Передаём дельту в анализ
     setAnalysis(result);
+    
+    // ВАЖНО: Обновляем общий прогресс пользователя
+    const surveyData = localStorage.getItem(`lenvpen_survey_${user.telegram_id}`);
+    if (surveyData) {
+      const parsed = JSON.parse(surveyData);
+      const currentProgress = 100 - (parsed.harmLevel || 0);
+      const newProgress = Math.min(100, Math.max(0, currentProgress + slothState.progressDelta));
+      
+      // Обновляем harmLevel обратно из прогресса
+      parsed.harmLevel = Math.max(0, 100 - newProgress);
+      parsed.lastProgressUpdate = new Date().toISOString();
+      localStorage.setItem(`lenvpen_survey_${user.telegram_id}`, JSON.stringify(parsed));
+    }
     
     // Сохранение
     const today = new Date().toDateString();
@@ -268,9 +283,16 @@ function DailyReportEnhanced() {
             <div className={`text-9xl mb-4 sloth-animation-${slothState.animation}`}>
               {slothState.emoji}
             </div>
-            <p className="text-2xl text-lenvpen-text font-bold mb-2">
-              {slothState.progressDelta > 0 ? '+' : ''}{slothState.progressDelta}% к прогрессу!
-            </p>
+            <div className="mb-4">
+              <div className="text-4xl font-black mb-1">
+                <span className={slothState.progressDelta >= 0 ? 'text-lenvpen-green' : 'text-lenvpen-red'}>
+                  {slothState.progressDelta > 0 ? '+' : ''}{slothState.progressDelta}%
+                </span>
+              </div>
+              <p className="text-sm text-lenvpen-muted">
+                {slothState.progressDelta > 0 ? 'Прогресс вырос!' : slothState.progressDelta < 0 ? 'Прогресс снизился' : 'Без изменений'}
+              </p>
+            </div>
             <p className="text-lg text-lenvpen-text italic">
               "{analysis.comment}"
             </p>
@@ -294,6 +316,49 @@ function DailyReportEnhanced() {
               </div>
             </div>
           )}
+          
+          {/* Влияние на прогресс */}
+          <div className="card bg-gradient-to-br from-lenvpen-orange/5 to-lenvpen-red/5">
+            <h3 className="text-lg font-bold text-lenvpen-orange mb-3">⚡ Влияние на общий прогресс</h3>
+            <div className="bg-lenvpen-bg rounded-lg p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-lenvpen-muted text-sm">Прогресс до отчёта:</span>
+                <span className="text-lenvpen-text font-bold">
+                  {(() => {
+                    const surveyData = localStorage.getItem(`lenvpen_survey_${user.telegram_id}`);
+                    if (surveyData) {
+                      const parsed = JSON.parse(surveyData);
+                      return Math.max(0, 100 - (parsed.harmLevel || 0));
+                    }
+                    return 0;
+                  })()}%
+                </span>
+              </div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-lenvpen-muted text-sm">Изменение:</span>
+                <span className={`font-black text-lg ${slothState.progressDelta >= 0 ? 'text-lenvpen-green' : 'text-lenvpen-red'}`}>
+                  {slothState.progressDelta > 0 ? '+' : ''}{slothState.progressDelta}%
+                </span>
+              </div>
+              <div className="flex items-center justify-between pt-2 border-t border-lenvpen-border">
+                <span className="text-lenvpen-text font-semibold">Новый прогресс:</span>
+                <span className="text-lenvpen-orange font-black text-xl">
+                  {(() => {
+                    const surveyData = localStorage.getItem(`lenvpen_survey_${user.telegram_id}`);
+                    if (surveyData) {
+                      const parsed = JSON.parse(surveyData);
+                      const current = Math.max(0, 100 - (parsed.harmLevel || 0));
+                      return Math.min(100, Math.max(0, current + slothState.progressDelta));
+                    }
+                    return slothState.progressDelta;
+                  })()}%
+                </span>
+              </div>
+            </div>
+            <div className="mt-3 text-xs text-lenvpen-muted text-center">
+              💡 Dashboard обновится автоматически при следующем входе
+            </div>
+          </div>
           
           {/* Анализ */}
           <div className="card space-y-4">
@@ -389,12 +454,47 @@ function DailyReportEnhanced() {
           <div className={`text-9xl mb-4 sloth-animation-${slothState.animation}`}>
             {slothState.emoji}
           </div>
-          <div className="text-3xl font-black text-lenvpen-orange mb-2">
-            {slothState.progressDelta > 0 ? '+' : ''}{slothState.progressDelta}%
+          <div className="text-3xl font-black mb-2">
+            <span className={slothState.progressDelta >= 0 ? 'text-lenvpen-green' : 'text-lenvpen-red'}>
+              {slothState.progressDelta > 0 ? '+' : ''}{slothState.progressDelta}%
+            </span>
           </div>
-          <p className="text-lenvpen-text italic px-4">
+          <p className="text-lenvpen-text italic px-4 mb-4">
             "{slothState.message}"
           </p>
+          
+          {/* Формула расчёта */}
+          <div className="mt-4 pt-4 border-t border-lenvpen-orange/30">
+            <div className="text-xs text-lenvpen-muted mb-2">📊 Формула влияния</div>
+            <div className="flex items-center justify-center gap-2 text-sm">
+              <span className="text-lenvpen-green font-bold">
+                Польза: {(() => {
+                  const usefulCount = Object.values(usefulActions).filter(Boolean).length;
+                  let total = usefulCount * 5;
+                  if (additionalEvents.triggerVictory) total += 8;
+                  if (additionalEvents.achievement) total += 10;
+                  return total;
+                })()}
+              </span>
+              <span className="text-lenvpen-muted">−</span>
+              <span className="text-lenvpen-red font-bold">
+                Вред: {(() => {
+                  let total = 0;
+                  Object.values(dependencyValues).forEach(dep => {
+                    if (dep.exceeded) total += 10;
+                    if (dep.count > 0 && !dep.resisted) total += dep.count * 2;
+                  });
+                  if (additionalEvents.stress) total += 3;
+                  if (additionalEvents.conflict) total += 5;
+                  return total;
+                })()}
+              </span>
+              <span className="text-lenvpen-muted">=</span>
+              <span className={`font-black ${slothState.progressDelta >= 0 ? 'text-lenvpen-green' : 'text-lenvpen-red'}`}>
+                {slothState.progressDelta > 0 ? '+' : ''}{slothState.progressDelta}
+              </span>
+            </div>
+          </div>
         </div>
         
         {/* ═══ ЗАВИСИМОСТИ ↓ ═══ */}
