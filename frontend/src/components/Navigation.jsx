@@ -3,8 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 /**
  * NAVIGATION COMPONENT
  * Единая навигация без дублирования
- * Верх: Главная, Календарь, Прогресс, Зависимости
- * Низ: Отчёт дня, Мотивация, Профиль
+ * Верх: Главная, Прогресс, Календарь, Профиль
+ * Низ: Отчёт за день, Мои зависимости
  */
 
 function Navigation() {
@@ -15,10 +15,10 @@ function Navigation() {
 
   return (
     <>
-      {/* Верхнее меню - 3 вкладки */}
+      {/* Верхнее меню - 4 вкладки */}
       <div className="fixed top-0 left-0 right-0 bg-lenvpen-card/95 backdrop-blur-md border-b border-lenvpen-border z-30">
         <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-4 gap-2">
             <button
               onClick={() => navigate('/dashboard')}
               className={`flex flex-col items-center gap-1 py-2 rounded-lg transition-all ${
@@ -53,6 +53,18 @@ function Navigation() {
             >
               <span className="text-2xl">📅</span>
               <span className="text-xs font-bold">Календарь</span>
+            </button>
+
+            <button
+              onClick={() => navigate('/settings')}
+              className={`flex flex-col items-center gap-1 py-2 rounded-lg transition-all ${
+                isActive('/settings')
+                  ? 'bg-lenvpen-accent/10 text-lenvpen-accent'
+                  : 'text-lenvpen-muted hover:text-lenvpen-text hover:bg-lenvpen-bg/50'
+              }`}
+            >
+              <span className="text-2xl">⚙️</span>
+              <span className="text-xs font-bold">Профиль</span>
             </button>
           </div>
         </div>
