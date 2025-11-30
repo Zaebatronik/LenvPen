@@ -101,24 +101,24 @@ function DailyReportNew() {
     }
   };
 
-  // Расчёт итоговых очков
+  // Расчёт итоговых очков (Блок 6: Плюсы ×2, Минусы -1)
   const calculateDayScore = () => {
     let score = 0;
     
-    // Минусы от зависимостей
+    // Минусы от зависимостей (-1 за каждое нарушение)
     Object.entries(dependenciesReport).forEach(([key, data]) => {
       if (data.violated) {
         const depParam = surveyData.depParams?.[key];
         const harm = depParam?.harm || 5;
-        score -= harm;
+        score -= harm; // Минус -1 (вред влияет на размер минуса)
       }
     });
     
-    // Плюсы от действий
+    // Плюсы от действий (×2 для всех плюсов)
     selectedActions.forEach(actionId => {
       const intensity = actionsIntensity[actionId] || 'medium';
       const level = INTENSITY_LEVELS.find(l => l.value === intensity);
-      score += level.points;
+      score += level.points * 2; // ×2 для плюсовых действий
     });
     
     return score;

@@ -18,6 +18,8 @@ import DailyReportEnhanced from './pages/DailyReportEnhanced';
 import DailyReportT3 from './pages/DailyReportT3';
 import DailyReportNew from './pages/DailyReportNew';
 import Calendar from './pages/Calendar';
+import Progress from './pages/Progress';
+import Dependencies from './pages/Dependencies';
 import DailyTasks from './pages/DailyTasks';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
@@ -214,6 +216,8 @@ function App() {
         <Route path="/daily-report-enhanced" element={<DailyReportEnhanced />} />
         <Route path="/daily-report-old" element={<DailyReport />} />
         <Route path="/calendar" element={<Calendar />} />
+        <Route path="/progress" element={<Progress />} />
+        <Route path="/dependencies" element={<Dependencies />} />
         <Route path="/daily-tasks" element={<DailyTasks />} />
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/settings" element={<Settings />} />

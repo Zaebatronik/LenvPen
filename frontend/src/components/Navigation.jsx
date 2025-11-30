@@ -15,101 +15,75 @@ function Navigation() {
 
   return (
     <>
-      {/* Верхнее меню */}
+      {/* Верхнее меню - 3 вкладки */}
       <div className="fixed top-0 left-0 right-0 bg-lenvpen-card/95 backdrop-blur-md border-b border-lenvpen-border z-30">
         <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="flex justify-around items-center">
+          <div className="grid grid-cols-3 gap-2">
             <button
               onClick={() => navigate('/dashboard')}
-              className={`flex flex-col items-center gap-1 transition-colors ${
+              className={`flex flex-col items-center gap-1 py-2 rounded-lg transition-all ${
                 isActive('/dashboard')
-                  ? 'text-lenvpen-accent'
-                  : 'text-lenvpen-muted hover:text-lenvpen-text'
+                  ? 'bg-lenvpen-accent/10 text-lenvpen-accent'
+                  : 'text-lenvpen-muted hover:text-lenvpen-text hover:bg-lenvpen-bg/50'
               }`}
             >
               <span className="text-2xl">🏠</span>
-              <span className="text-xs font-medium">Главная</span>
+              <span className="text-xs font-bold">Главная</span>
+            </button>
+
+            <button
+              onClick={() => navigate('/progress')}
+              className={`flex flex-col items-center gap-1 py-2 rounded-lg transition-all ${
+                isActive('/progress')
+                  ? 'bg-lenvpen-accent/10 text-lenvpen-accent'
+                  : 'text-lenvpen-muted hover:text-lenvpen-text hover:bg-lenvpen-bg/50'
+              }`}
+            >
+              <span className="text-2xl">📊</span>
+              <span className="text-xs font-bold">Прогресс</span>
             </button>
 
             <button
               onClick={() => navigate('/calendar')}
-              className={`flex flex-col items-center gap-1 transition-colors ${
+              className={`flex flex-col items-center gap-1 py-2 rounded-lg transition-all ${
                 isActive('/calendar')
-                  ? 'text-lenvpen-accent'
-                  : 'text-lenvpen-muted hover:text-lenvpen-text'
+                  ? 'bg-lenvpen-accent/10 text-lenvpen-accent'
+                  : 'text-lenvpen-muted hover:text-lenvpen-text hover:bg-lenvpen-bg/50'
               }`}
             >
               <span className="text-2xl">📅</span>
-              <span className="text-xs font-medium">Календарь</span>
-            </button>
-
-            <button
-              onClick={() => navigate('/analytics')}
-              className={`flex flex-col items-center gap-1 transition-colors ${
-                isActive('/analytics')
-                  ? 'text-lenvpen-accent'
-                  : 'text-lenvpen-muted hover:text-lenvpen-text'
-              }`}
-            >
-              <span className="text-2xl">📊</span>
-              <span className="text-xs font-medium">Прогресс</span>
-            </button>
-
-            <button
-              onClick={() => navigate('/daily-tasks')}
-              className={`flex flex-col items-center gap-1 transition-colors ${
-                isActive('/daily-tasks')
-                  ? 'text-lenvpen-accent'
-                  : 'text-lenvpen-muted hover:text-lenvpen-text'
-              }`}
-            >
-              <span className="text-2xl">🎯</span>
-              <span className="text-xs font-medium">Зависимости</span>
+              <span className="text-xs font-bold">Календарь</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Нижнее меню */}
+      {/* Нижнее меню - 2 кнопки */}
       <div className="fixed bottom-0 left-0 right-0 bg-lenvpen-card/95 backdrop-blur-md border-t border-lenvpen-border z-30">
         <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="flex justify-around items-center">
+          <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => navigate('/daily-report')}
-              className={`flex flex-col items-center gap-1 transition-all ${
+              className={`flex items-center justify-center gap-3 py-4 rounded-xl font-bold transition-all ${
                 isActive('/daily-report')
-                  ? 'text-lenvpen-accent scale-110'
-                  : 'text-lenvpen-muted hover:text-lenvpen-text'
+                  ? 'bg-lenvpen-accent text-white shadow-lg shadow-lenvpen-accent/20'
+                  : 'bg-lenvpen-card border border-lenvpen-border text-lenvpen-text hover:border-lenvpen-accent/50'
               }`}
             >
-              <div className={`rounded-full p-2 ${isActive('/daily-report') ? 'bg-lenvpen-accent/10' : ''}`}>
-                <span className="text-3xl">📋</span>
-              </div>
-              <span className="text-xs font-bold">Отчёт дня</span>
+              <span className="text-2xl">📋</span>
+              <span>Отчёт за день</span>
             </button>
 
             <button
-              onClick={() => navigate('/motivation')}
-              className={`flex flex-col items-center gap-1 transition-colors ${
-                isActive('/motivation')
-                  ? 'text-lenvpen-accent'
-                  : 'text-lenvpen-muted hover:text-lenvpen-text'
+              onClick={() => navigate('/dependencies')}
+              className={`flex items-center justify-center gap-3 py-4 rounded-xl font-bold transition-all ${
+                isActive('/dependencies')
+                  ? 'bg-lenvpen-accent text-white shadow-lg shadow-lenvpen-accent/20'
+                  : 'bg-lenvpen-card border border-lenvpen-border text-lenvpen-text hover:border-lenvpen-accent/50'
               }`}
             >
-              <span className="text-2xl">💪</span>
-              <span className="text-xs font-medium">Мотивация</span>
-            </button>
-
-            <button
-              onClick={() => navigate('/settings')}
-              className={`flex flex-col items-center gap-1 transition-colors ${
-                isActive('/settings')
-                  ? 'text-lenvpen-accent'
-                  : 'text-lenvpen-muted hover:text-lenvpen-text'
-              }`}
-            >
-              <span className="text-2xl">👤</span>
-              <span className="text-xs font-medium">Профиль</span>
+              <span className="text-2xl">🎯</span>
+              <span>Мои зависимости</span>
             </button>
           </div>
         </div>
