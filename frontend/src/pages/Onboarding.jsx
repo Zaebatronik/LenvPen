@@ -88,7 +88,7 @@ function Onboarding() {
             </div>
           </div>
           
-          <div className="bg-gradient-to-br from-lenvpen-card/30 to-lenvpen-card/10 rounded-2xl p-6 border border-lenvpen-border/20">
+          <div className="bg-lenvpen-card rounded-2xl p-6 border border-lenvpen-border/20">
             <div className="space-y-3 text-lenvpen-text/90">
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 rounded-full bg-lenvpen-green/20 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -148,7 +148,7 @@ function Onboarding() {
               </p>
             </div>
             
-            <div className="bg-gradient-to-r from-lenvpen-orange/10 to-lenvpen-red/10 border border-lenvpen-orange/30 p-5 rounded-xl">
+            <div className="bg-lenvpen-accent/10 border border-lenvpen-accent/30 p-5 rounded-xl">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-xl font-bold text-lenvpen-orange">90% – 100%</div>
                 <div className="text-xs uppercase tracking-wide text-lenvpen-orange/80 font-semibold">Мастерство</div>
@@ -404,7 +404,7 @@ function Onboarding() {
           )}
           <button
             onClick={handleNext}
-            className="flex-1 py-3.5 px-6 rounded-xl font-semibold transition-all bg-gradient-to-r from-lenvpen-orange to-lenvpen-red text-white hover:shadow-lg hover:shadow-lenvpen-orange/20"
+            className="flex-1 py-3.5 px-6 rounded-xl font-semibold transition-all bg-lenvpen-accent text-white hover:bg-lenvpen-accent/90 hover:shadow-lg shadow-lenvpen-accent/20"
           >
             {currentScreen === 3 ? 'Начать работу' : 'Далее →'}
           </button>

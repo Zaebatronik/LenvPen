@@ -409,7 +409,7 @@ function DailyReportT3() {
               </div>
             )}
             
-            <div className="bg-gradient-to-br from-lenvpen-card/50 to-lenvpen-card/30 border-2 border-lenvpen-orange/30 rounded-xl p-6">
+            <div className="bg-lenvpen-card border-2 border-lenvpen-accent/30 rounded-xl p-6">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-lg font-semibold text-lenvpen-text">Итог дня</span>
                 <span className={`text-3xl font-bold ${summary.dayResult >= 0 ? 'text-lenvpen-green' : 'text-lenvpen-red'}`}>
@@ -428,7 +428,7 @@ function DailyReportT3() {
           <div className="space-y-3">
             <button
               onClick={() => navigate('/dashboard')}
-              className="w-full py-3.5 px-6 rounded-xl font-semibold transition-all bg-gradient-to-r from-lenvpen-orange to-lenvpen-red text-white hover:shadow-lg"
+              className="w-full py-3.5 px-6 rounded-xl font-semibold transition-all bg-lenvpen-accent text-white hover:shadow-lg"
             >
               Вернуться на главную
             </button>
@@ -469,7 +469,7 @@ function DailyReportT3() {
           <div className="space-y-3">
             <button
               onClick={() => navigate('/dashboard')}
-              className="w-full py-3.5 px-6 rounded-xl font-semibold transition-all bg-gradient-to-r from-lenvpen-orange to-lenvpen-red text-white hover:shadow-lg"
+              className="w-full py-3.5 px-6 rounded-xl font-semibold transition-all bg-lenvpen-accent text-white hover:shadow-lg"
             >
               Вернуться на главную
             </button>
@@ -511,7 +511,7 @@ function DailyReportT3() {
       
       <div className="max-w-2xl mx-auto px-6 py-6 space-y-8">
         {/* Подсказка о неизменяемости */}
-        <div className="bg-lenvpen-orange/10 border border-lenvpen-orange/30 rounded-xl p-4">
+        <div className="bg-lenvpen-orange/10 border border-lenvpen-accent/30 rounded-xl p-4">
           <p className="text-sm text-lenvpen-text/80 text-center">
             ⚠️ Один отчёт в день — сохраняется навсегда. Заполни честно.
           </p>
@@ -801,7 +801,7 @@ function DailyReportT3() {
             className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all ${
               isSubmitting || !dayStatus
                 ? 'bg-lenvpen-card/50 text-lenvpen-muted cursor-not-allowed'
-                : 'bg-gradient-to-r from-lenvpen-orange to-lenvpen-red text-white hover:shadow-lg hover:shadow-lenvpen-orange/20'
+                : 'bg-lenvpen-accent text-white hover:bg-lenvpen-accent/90 hover:shadow-lg shadow-lenvpen-accent/20'
             }`}
           >
             {isSubmitting ? 'Сохранение...' : 'Сохранить отчёт (неизменяемый)'}

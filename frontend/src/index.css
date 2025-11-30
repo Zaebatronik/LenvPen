@@ -10,8 +10,8 @@
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #0f0f0f;
-  color: #e5e5e5;
+  background-color: #0a0a0a;
+  color: #f5f5f5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -22,23 +22,23 @@ body {
 
 @layer components {
   .btn-primary {
-    @apply bg-gradient-to-r from-lenvpen-red to-lenvpen-orange hover:from-lenvpen-orange hover:to-lenvpen-red text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-lenvpen-orange/50 active:scale-95 transform;
+    @apply bg-lenvpen-accent hover:bg-lenvpen-accent/90 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg shadow-lenvpen-accent/20 hover:shadow-xl hover:shadow-lenvpen-accent/30 active:scale-[0.98] border border-lenvpen-accent/20;
   }
   
   .btn-secondary {
-    @apply bg-gradient-to-br from-lenvpen-card to-lenvpen-bg hover:from-lenvpen-bg hover:to-lenvpen-card text-lenvpen-text font-medium py-3 px-6 rounded-xl transition-all duration-300 active:scale-95 transform;
+    @apply bg-lenvpen-card hover:bg-lenvpen-card/80 text-lenvpen-text font-medium py-3 px-6 rounded-xl transition-all duration-200 border border-lenvpen-border hover:border-lenvpen-border/60 active:scale-[0.98];
   }
   
   .card {
-    @apply bg-gradient-to-br from-lenvpen-card to-lenvpen-bg rounded-2xl p-4 sm:p-6 shadow-xl backdrop-blur-sm;
+    @apply bg-lenvpen-card rounded-2xl p-4 sm:p-6 shadow-2xl border border-lenvpen-border/50;
   }
   
   .progress-bar {
-    @apply w-full h-3 bg-lenvpen-bg rounded-full overflow-hidden shadow-inner;
+    @apply w-full h-3 bg-lenvpen-bg rounded-full overflow-hidden border border-lenvpen-border/30;
   }
   
   .progress-fill {
-    @apply h-full bg-gradient-to-r from-lenvpen-red via-lenvpen-orange to-lenvpen-green transition-all duration-500 shadow-lg;
+    @apply h-full bg-lenvpen-accent transition-all duration-500;
   }
   
   .safe-area-inset {
