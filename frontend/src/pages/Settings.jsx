@@ -37,7 +37,11 @@ function Settings() {
       const keysToRemove = [];
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
-        if (key && key.includes(user.telegram_id.toString())) {
+        if (key && (
+          key.includes(user.telegram_id.toString()) || 
+          key === 'lenvpen_user' ||
+          key === 'lenvpen_telegram_user'
+        )) {
           keysToRemove.push(key);
         }
       }
@@ -46,6 +50,9 @@ function Settings() {
         localStorage.removeItem(key);
         console.log('Removed:', key);
       });
+      
+      // Дополнительно очищаем глобальный стейт
+      localStorage.clear();
       
       console.log(`All data deleted: ${keysToRemove.length} keys removed`);
 
