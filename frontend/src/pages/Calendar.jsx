@@ -3,12 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import { APP_VERSION } from '../config/version';
 
 /**
- * CALENDAR — История всех отчётов
- * Каждый день — кнопка, при клике показывает неизменяемый отчёт
+ * CALENDAR — История всех отчётов с карточками дней
+ * Каждый день — карточка с итогом и emoji ленивца
+ * При клике показывает полный неизменяемый отчёт
  */
 
 const MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
 const DAYS_OF_WEEK = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+
+// Маппинг действий с иконками
+const ACTION_ICONS = {
+  'sport': { label: 'Спорт', icon: '🏃' },
+  'work': { label: 'Работа', icon: '💼' },
+  'study': { label: 'Учёба', icon: '📚' },
+  'sleep': { label: 'Сон 7+ часов', icon: '😴' },
+  'healthy_food': { label: 'Здоровая еда', icon: '🥗' },
+  'meditation': { label: 'Медитация', icon: '🧘' }
+};
 
 function Calendar() {
   const navigate = useNavigate();
@@ -127,7 +138,7 @@ function Calendar() {
           ))}
         </div>
 
-        {/* Календарь */}
+        {/* Календарь — карточки дней */}
         <div className="grid grid-cols-7 gap-2">
           {days.map((date, index) => {
             if (!date) {
@@ -136,57 +147,84 @@ function Calendar() {
 
             const report = getReportForDate(date);
             const isToday = date.toDateString() === today;
+            const isFuture = date > new Date();
             const dayScore = report?.score || 0;
+
+            // Определяем emoji ленивца в зависимости от результата
+            let slothEmoji = '';
+            if (report) {
+              if (dayScore >= 10) slothEmoji = '🦥✨';
+              else if (dayScore >= 5) slothEmoji = '🦥';
+              else if (dayScore >= 0) slothEmoji = '😐';
+              else if (dayScore >= -5) slothEmoji = '😿';
+              else slothEmoji = '💀';
+            }
 
             return (
               <button
                 key={date.toISOString()}
                 onClick={() => openReport(date)}
-                disabled={!report}
-                className={`aspect-square rounded-xl transition-all flex flex-col items-center justify-center relative ${
+                disabled={!report || isFuture}
+                className={`aspect-square rounded-xl transition-all flex flex-col items-center justify-center relative group ${
                   isToday
-                    ? 'ring-2 ring-lenvpen-accent'
+                    ? 'ring-2 ring-lenvpen-accent shadow-lg shadow-lenvpen-accent/20'
                     : ''
                 } ${
                   report
                     ? dayScore >= 0
-                      ? 'bg-lenvpen-green/20 border-2 border-lenvpen-green/50 hover:bg-lenvpen-green/30'
-                      : 'bg-lenvpen-red/20 border-2 border-lenvpen-red/50 hover:bg-lenvpen-red/30'
-                    : 'bg-lenvpen-card border border-lenvpen-border/30 opacity-50 cursor-not-allowed'
+                      ? 'bg-gradient-to-br from-lenvpen-green/10 to-lenvpen-green/20 border-2 border-lenvpen-green/50 hover:border-lenvpen-green hover:shadow-md hover:scale-105'
+                      : 'bg-gradient-to-br from-lenvpen-red/10 to-lenvpen-red/20 border-2 border-lenvpen-red/50 hover:border-lenvpen-red hover:shadow-md hover:scale-105'
+                    : isFuture
+                    ? 'bg-lenvpen-card/30 border border-dashed border-lenvpen-border/20 opacity-30 cursor-not-allowed'
+                    : 'bg-lenvpen-card border border-lenvpen-border/30 opacity-40 cursor-not-allowed'
                 }`}
               >
-                <span className={`text-lg font-bold ${report ? 'text-lenvpen-text' : 'text-lenvpen-muted'}`}>
+                <span className={`text-base font-bold ${report ? 'text-lenvpen-text' : 'text-lenvpen-muted'}`}>
                   {date.getDate()}
                 </span>
                 {report && (
-                  <span className={`text-xs font-bold mt-1 ${dayScore >= 0 ? 'text-lenvpen-green' : 'text-lenvpen-red'}`}>
-                    {dayScore >= 0 ? '+' : ''}{dayScore}%
-                  </span>
+                  <>
+                    <span className="text-xl my-1">{slothEmoji}</span>
+                    <span className={`text-xs font-black ${dayScore >= 0 ? 'text-lenvpen-green' : 'text-lenvpen-red'}`}>
+                      {dayScore >= 0 ? '+' : ''}{dayScore}
+                    </span>
+                  </>
+                )}
+                {!report && !isFuture && (
+                  <span className="text-xs text-lenvpen-muted/50 mt-1">—</span>
                 )}
               </button>
             );
           })}
         </div>
 
-        {/* Легенда */}
-        <div className="mt-8 bg-lenvpen-card rounded-2xl p-6 border border-lenvpen-border">
-          <h3 className="text-lg font-bold text-lenvpen-text mb-4">Легенда</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-lenvpen-green/20 border-2 border-lenvpen-green/50"></div>
-              <span className="text-sm text-lenvpen-text">Хороший день (+)</span>
+        {/* Легенда реакций ленивца */}
+        <div className="mt-8 bg-gradient-to-br from-lenvpen-card to-lenvpen-card/50 rounded-2xl p-6 border border-lenvpen-border">
+          <h3 className="text-lg font-bold text-lenvpen-text mb-4">📊 Легенда реакций</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">🦥✨</span>
+              <span className="text-xs text-lenvpen-text">+10% и выше</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-lenvpen-red/20 border-2 border-lenvpen-red/50"></div>
-              <span className="text-sm text-lenvpen-text">Плохой день (−)</span>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">🦥</span>
+              <span className="text-xs text-lenvpen-text">+5% до +10%</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-lenvpen-card border border-lenvpen-border/30 opacity-50"></div>
-              <span className="text-sm text-lenvpen-text">Нет отчёта</span>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">😐</span>
+              <span className="text-xs text-lenvpen-text">0% до +5%</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-lenvpen-card border border-lenvpen-border/30 ring-2 ring-lenvpen-accent"></div>
-              <span className="text-sm text-lenvpen-text">Сегодня</span>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">😿</span>
+              <span className="text-xs text-lenvpen-text">-5% до 0%</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl">💀</span>
+              <span className="text-xs text-lenvpen-text">Ниже -5%</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-md border border-dashed border-lenvpen-border/30 opacity-30"></div>
+              <span className="text-xs text-lenvpen-muted">Будущее</span>
             </div>
           </div>
         </div>
@@ -231,12 +269,17 @@ function Calendar() {
       {/* Модалка детального просмотра отчёта */}
       {selectedDate && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-6 overflow-y-auto">
-          <div className="bg-lenvpen-card border-2 border-lenvpen-accent rounded-3xl p-8 max-w-2xl w-full my-8">
+          <div className="bg-lenvpen-card border-2 border-lenvpen-accent rounded-3xl p-8 max-w-2xl w-full my-8 shadow-2xl">
             {/* Заголовок */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-lenvpen-text">
-                {new Date(selectedDate.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
-              </h2>
+              <div>
+                <h2 className="text-2xl font-bold text-lenvpen-text">
+                  {new Date(selectedDate.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </h2>
+                <p className="text-sm text-lenvpen-muted mt-1">
+                  {new Date(selectedDate.date).toLocaleDateString('ru-RU', { weekday: 'long' })}
+                </p>
+              </div>
               <button
                 onClick={() => setSelectedDate(null)}
                 className="w-10 h-10 rounded-full bg-lenvpen-bg hover:bg-lenvpen-border flex items-center justify-center text-lenvpen-text transition-all"
@@ -246,95 +289,157 @@ function Calendar() {
             </div>
 
             {/* Итог дня */}
-            <div className="bg-lenvpen-bg rounded-2xl p-6 mb-6">
+            <div className="bg-gradient-to-br from-lenvpen-bg to-lenvpen-card/50 rounded-2xl p-6 mb-6 border border-lenvpen-border/30">
               <div className="text-center">
+                <div className="text-5xl mb-3">
+                  {selectedDate.score >= 10 ? '🦥✨' : 
+                   selectedDate.score >= 5 ? '🦥' :
+                   selectedDate.score >= 0 ? '😐' :
+                   selectedDate.score >= -5 ? '😿' : '💀'}
+                </div>
                 <div className={`text-6xl font-black mb-2 ${selectedDate.score >= 0 ? 'text-lenvpen-green' : 'text-lenvpen-red'}`}>
                   {selectedDate.score >= 0 ? '+' : ''}{selectedDate.score}%
                 </div>
-                <div className="text-sm text-lenvpen-muted">Изменение процента</div>
+                <div className="text-sm text-lenvpen-muted">Изменение прогресса</div>
+              </div>
+            </div>
+
+            {/* Краткая статистика */}
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              <div className="bg-lenvpen-bg rounded-xl p-3 text-center border border-lenvpen-border/30">
+                <div className="text-2xl font-black text-lenvpen-red">
+                  {Object.values(selectedDate.dependencies || {}).filter(d => d.violated).length}
+                </div>
+                <div className="text-xs text-lenvpen-muted mt-1">Нарушений</div>
+              </div>
+              <div className="bg-lenvpen-bg rounded-xl p-3 text-center border border-lenvpen-border/30">
+                <div className="text-2xl font-black text-lenvpen-green">
+                  {selectedDate.actions?.length || 0}
+                </div>
+                <div className="text-xs text-lenvpen-muted mt-1">Плюсов</div>
+              </div>
+              <div className="bg-lenvpen-bg rounded-xl p-3 text-center border border-lenvpen-border/30">
+                <div className={`text-2xl font-black ${selectedDate.score >= 0 ? 'text-lenvpen-green' : 'text-lenvpen-red'}`}>
+                  {selectedDate.score >= 0 ? '+' : ''}{selectedDate.score}
+                </div>
+                <div className="text-xs text-lenvpen-muted mt-1">Итог</div>
               </div>
             </div>
 
             {/* Зависимости */}
-            <div className="mb-6">
-              <h3 className="text-lg font-bold text-lenvpen-text mb-3">Зависимости</h3>
-              {Object.keys(selectedDate.dependencies || {}).length > 0 ? (
+            {Object.keys(selectedDate.dependencies || {}).length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-lenvpen-text mb-3 flex items-center gap-2">
+                  <span>❌</span> Вредные привычки
+                </h3>
                 <div className="space-y-2">
                   {Object.entries(selectedDate.dependencies).map(([key, data]) => (
-                    <div key={key} className="bg-lenvpen-bg rounded-xl p-4 flex items-center justify-between">
-                      <span className="text-lenvpen-text capitalize">{key}</span>
+                    <div 
+                      key={key} 
+                      className={`rounded-xl p-4 flex items-center justify-between transition-all ${
+                        data.violated 
+                          ? 'bg-lenvpen-red/10 border-2 border-lenvpen-red/30' 
+                          : 'bg-lenvpen-green/10 border-2 border-lenvpen-green/30'
+                      }`}
+                    >
+                      <span className="text-lenvpen-text capitalize font-semibold">{key}</span>
                       <div className="flex items-center gap-2">
                         {data.violated ? (
                           <>
-                            <span className="text-lenvpen-red font-bold">❌ Нарушено</span>
+                            <span className="text-lenvpen-red font-bold">❌ Да</span>
                             {data.amount > 0 && (
-                              <span className="text-lenvpen-muted text-sm">({data.amount}x)</span>
+                              <span className="bg-lenvpen-red/20 text-lenvpen-red px-2 py-1 rounded-lg text-xs font-bold">
+                                ×{data.amount}
+                              </span>
                             )}
                           </>
                         ) : (
-                          <span className="text-lenvpen-green font-bold">✅ Не нарушено</span>
+                          <span className="text-lenvpen-green font-bold">✅ Нет</span>
                         )}
                       </div>
                     </div>
                   ))}
                 </div>
-              ) : (
-                <p className="text-lenvpen-muted text-sm">Нет данных о зависимостях</p>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Позитивные действия */}
-            <div className="mb-6">
-              <h3 className="text-lg font-bold text-lenvpen-text mb-3">Позитивные действия</h3>
-              {selectedDate.actions?.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
+            {selectedDate.actions?.length > 0 && (
+              <div className="mb-6">
+                <h3 className="text-lg font-bold text-lenvpen-text mb-3 flex items-center gap-2">
+                  <span>✅</span> Полезные действия
+                </h3>
+                <div className="grid grid-cols-2 gap-2">
                   {selectedDate.actions.map(actionId => {
-                    const intensity = selectedDate.intensity?.[actionId] || 'medium';
+                    const actionInfo = ACTION_ICONS[actionId] || { label: actionId.replace('_', ' '), icon: '✅' };
                     return (
                       <div
                         key={actionId}
-                        className="bg-lenvpen-bg rounded-lg px-4 py-2 text-sm"
+                        className="bg-gradient-to-br from-lenvpen-accent/10 to-lenvpen-accent/5 border border-lenvpen-accent/30 rounded-lg px-3 py-3 flex items-center gap-2 hover:border-lenvpen-accent/50 transition-all"
                       >
-                        <span className="text-lenvpen-text font-semibold">{actionId}</span>
-                        <span className="text-lenvpen-muted ml-2">({intensity})</span>
+                        <span className="text-2xl">{actionInfo.icon}</span>
+                        <span className="text-lenvpen-text font-semibold text-sm">
+                          {actionInfo.label}
+                        </span>
                       </div>
                     );
                   })}
                 </div>
-              ) : (
-                <p className="text-lenvpen-muted text-sm">Нет позитивных действий</p>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Комментарий */}
             {selectedDate.comment && (
               <div className="mb-6">
-                <h3 className="text-lg font-bold text-lenvpen-text mb-3">Комментарий дня</h3>
-                <div className="bg-lenvpen-bg rounded-xl p-4">
-                  <p className="text-lenvpen-text italic">"{selectedDate.comment}"</p>
+                <h3 className="text-lg font-bold text-lenvpen-text mb-3 flex items-center gap-2">
+                  <span>💭</span> Комментарий дня
+                </h3>
+                <div className="bg-lenvpen-bg rounded-xl p-4 border border-lenvpen-border/30">
+                  <p className="text-lenvpen-text italic leading-relaxed">"{selectedDate.comment}"</p>
                 </div>
               </div>
             )}
 
             {/* Реакция ленивца */}
-            <div className="bg-lenvpen-accent/10 border border-lenvpen-accent/30 rounded-2xl p-6">
+            <div className={`rounded-2xl p-6 border-2 ${
+              selectedDate.score >= 10 ? 'bg-gradient-to-br from-lenvpen-green/20 to-lenvpen-accent/20 border-lenvpen-green/50' :
+              selectedDate.score >= 5 ? 'bg-lenvpen-accent/10 border-lenvpen-accent/30' :
+              selectedDate.score >= 0 ? 'bg-lenvpen-card/50 border-lenvpen-border' :
+              'bg-lenvpen-red/10 border-lenvpen-red/30'
+            }`}>
               <div className="text-center">
-                <div className="text-5xl mb-3">
-                  {selectedDate.score >= 5 ? '🦥✨' : selectedDate.score >= 0 ? '🦥' : '😿'}
+                <div className="text-6xl mb-3">
+                  {selectedDate.score >= 10 ? '🦥✨' : 
+                   selectedDate.score >= 5 ? '🦥' :
+                   selectedDate.score >= 0 ? '😐' :
+                   selectedDate.score >= -5 ? '😿' : '💀'}
                 </div>
-                <p className="text-lenvpen-text font-semibold">
-                  {selectedDate.score >= 5
-                    ? 'Так! Я снова оживаю! Продолжай!'
+                <p className="text-lenvpen-text font-semibold text-lg">
+                  {selectedDate.score >= 10
+                    ? 'Невероятно! Я снова полон сил! 🌟'
+                    : selectedDate.score >= 5
+                    ? 'Так держать! Я оживаю! Продолжай!'
                     : selectedDate.score >= 0
-                    ? 'Неплохо. Двигаемся дальше.'
-                    : 'Ну вот… а я надеялся на лучший день 😿'}
+                    ? 'Неплохо. Маленькими шагами к цели.'
+                    : selectedDate.score >= -5
+                    ? 'Эх… Надеялся на лучший день 😿'
+                    : 'Это катастрофа… Соберись, пожалуйста 💀'}
                 </p>
+              </div>
+            </div>
+
+            {/* Предупреждение о неизменяемости */}
+            <div className="bg-lenvpen-bg/50 border border-lenvpen-border/50 rounded-xl p-4 mb-4 flex items-center gap-3">
+              <span className="text-2xl">🔒</span>
+              <div>
+                <p className="text-lenvpen-text font-semibold text-sm">Отчёт заморожен</p>
+                <p className="text-lenvpen-muted text-xs">Изменение или редактирование невозможно</p>
               </div>
             </div>
 
             <button
               onClick={() => setSelectedDate(null)}
-              className="w-full mt-6 py-3 rounded-xl font-semibold bg-lenvpen-accent text-white hover:bg-lenvpen-accent/90 transition-all"
+              className="w-full py-4 rounded-xl font-semibold bg-lenvpen-accent text-white hover:bg-lenvpen-accent/90 transition-all shadow-lg hover:shadow-xl"
             >
               Закрыть
             </button>
