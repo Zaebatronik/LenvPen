@@ -152,8 +152,9 @@ function SurveyNew() {
                 type="number"
                 min="0"
                 max="100"
-                value={details.cigarettes || 0}
-                onChange={(e) => updateDetail(depKey, 'cigarettes', parseInt(e.target.value))}
+                value={details.cigarettes || ''}
+                onChange={(e) => updateDetail(depKey, 'cigarettes', parseInt(e.target.value) || 0)}
+                placeholder="0"
                 className="w-full p-3 bg-lenvpen-card text-lenvpen-text rounded-lg"
               />
             </div>
@@ -177,8 +178,9 @@ function SurveyNew() {
                 type="number"
                 min="0"
                 max="50"
-                value={details.years || 0}
-                onChange={(e) => updateDetail(depKey, 'years', parseInt(e.target.value))}
+                value={details.years || ''}
+                onChange={(e) => updateDetail(depKey, 'years', parseInt(e.target.value) || 0)}
+                placeholder="0"
                 className="w-full p-3 bg-lenvpen-card text-lenvpen-text rounded-lg"
               />
             </div>
@@ -252,8 +254,9 @@ function SurveyNew() {
                 min="0"
                 max="24"
                 step="0.5"
-                value={details.hours || 0}
-                onChange={(e) => updateDetail(depKey, 'hours', parseFloat(e.target.value))}
+                value={details.hours || ''}
+                onChange={(e) => updateDetail(depKey, 'hours', parseFloat(e.target.value) || 0)}
+                placeholder="0"
                 className="w-full p-3 bg-lenvpen-card text-lenvpen-text rounded-lg"
               />
             </div>
@@ -298,8 +301,9 @@ function SurveyNew() {
                 min="0"
                 max="24"
                 step="0.5"
-                value={details.hours || 0}
-                onChange={(e) => updateDetail(depKey, 'hours', parseFloat(e.target.value))}
+                value={details.hours || ''}
+                onChange={(e) => updateDetail(depKey, 'hours', parseFloat(e.target.value) || 0)}
+                placeholder="0"
                 className="w-full p-3 bg-lenvpen-card text-lenvpen-text rounded-lg"
               />
             </div>
@@ -362,8 +366,9 @@ function SurveyNew() {
                 type="number"
                 min="0"
                 max="10"
-                value={details.times_per_day || 0}
-                onChange={(e) => updateDetail(depKey, 'times_per_day', parseInt(e.target.value))}
+                value={details.times_per_day || ''}
+                onChange={(e) => updateDetail(depKey, 'times_per_day', parseInt(e.target.value) || 0)}
+                placeholder="0"
                 className="w-full p-3 bg-lenvpen-card text-lenvpen-text rounded-lg"
               />
             </div>
@@ -520,8 +525,8 @@ function SurveyNew() {
               <input
                 type="number"
                 min="0"
-                value={details.amount_monthly || 0}
-                onChange={(e) => updateDetail(depKey, 'amount_monthly', parseInt(e.target.value))}
+                value={details.amount_monthly || ''}
+                onChange={(e) => updateDetail(depKey, 'amount_monthly', parseInt(e.target.value) || 0)}
                 placeholder="В рублях"
                 className="w-full p-3 bg-lenvpen-card text-lenvpen-text rounded-lg"
               />

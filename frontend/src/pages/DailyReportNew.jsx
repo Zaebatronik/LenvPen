@@ -256,8 +256,9 @@ function DailyReportNew() {
                             <input
                               type="number"
                               min="0"
-                              value={dependenciesReport[depKey]?.amount || 0}
+                              value={dependenciesReport[depKey]?.amount || ''}
                               onChange={(e) => handleDependencyChange(depKey, 'amount', parseInt(e.target.value) || 0)}
+                              placeholder="0"
                               className="w-full bg-lenvpen-bg border border-lenvpen-border rounded-xl px-4 py-3 text-lenvpen-text"
                             />
                           </div>
