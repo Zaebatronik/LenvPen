@@ -8,6 +8,7 @@ import SelectCountry from './pages/SelectCountry';
 import SelectCity from './pages/SelectCity';
 import SetNickname from './pages/SetNickname';
 import RegistrationSuccess from './pages/RegistrationSuccess';
+import Onboarding from './pages/Onboarding';
 import Survey from './pages/Survey';
 import SurveyNew from './pages/SurveyNew';
 import Dashboard from './pages/Dashboard';
@@ -126,13 +127,17 @@ function App() {
         setUser(userData);
         setLoading(false);
         
-        // Если зарегистрирован - проверяем опросник
+        // Если зарегистрирован - проверяем онбординг и опросник
         if (userData.registered) {
+          const onboardingCompleted = localStorage.getItem(`lenvpen_onboarding_completed_${telegramId}`);
           const surveyDataString = localStorage.getItem(`lenvpen_survey_${telegramId}`);
+          
           if (surveyDataString) {
             navigate('/dashboard');
-          } else {
+          } else if (onboardingCompleted) {
             navigate('/survey');
+          } else {
+            navigate('/onboarding');
           }
         } else {
           navigate('/welcome');
@@ -196,6 +201,7 @@ function App() {
         <Route path="/select-city" element={<SelectCity />} />
         <Route path="/set-nickname" element={<SetNickname />} />
         <Route path="/registration-success" element={<RegistrationSuccess />} />
+        <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/survey" element={<SurveyNew />} />
         <Route path="/survey-old" element={<Survey />} />
         <Route path="/dashboard" element={<DashboardNew />} />
