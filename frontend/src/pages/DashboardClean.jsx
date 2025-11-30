@@ -2,18 +2,16 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store/useStore';
 import { APP_VERSION } from '../config/version';
-import { determineTone, getPhraseByTone, getReactionForEvent, checkAchievements, getRandomBubble } from '../utils/slothBehavior';
-import BubbleNotification from '../components/BubbleNotification';
-import AchievementManager from '../components/AchievementManager';
+import Navigation from '../components/Navigation';
 
-// Система ленивца с 6 стадиями (Block C)
+// Система ленивца с 6 стадиями
 const SLOTH_STAGES = [
-  { level: 0, range: [0, 10], emoji: '😵', text: 'Мне плохо. Всем плохо. Я не просил сюда приходить.' },
-  { level: 1, range: [10, 25], emoji: '😑', text: 'Ладно, допустим, я сел. Но я недоволен.' },
-  { level: 2, range: [25, 40], emoji: '🙂', text: 'Кажется, этот мир… не так уж плох.' },
-  { level: 3, range: [40, 60], emoji: '😊', text: 'Опа! Работа пошла!' },
-  { level: 4, range: [60, 80], emoji: '😎', text: 'У нас тут прогресс, между прочим!' },
-  { level: 5, range: [80, 100], emoji: '🔥', text: 'Ты легенда. Я легенда. Мы легенды.' }
+  { level: 0, range: [0, 20], emoji: '😵', text: 'Мне плохо. Всем плохо. Я не просил сюда приходить.' },
+  { level: 1, range: [20, 40], emoji: '😑', text: 'Ладно, допустим, я сел. Но я недоволен.' },
+  { level: 2, range: [40, 60], emoji: '🙂', text: 'Кажется, этот мир… не так уж плох.' },
+  { level: 3, range: [60, 75], emoji: '😊', text: 'Опа! Работа пошла!' },
+  { level: 4, range: [75, 90], emoji: '😎', text: 'У нас тут прогресс, между прочим!' },
+  { level: 5, range: [90, 100], emoji: '🔥', text: 'Ты легенда. Я легенда. Мы легенды.' }
 ];
 
 function DashboardClean() {
@@ -48,8 +46,14 @@ function DashboardClean() {
   const loadDashboard = (surveyDataString) => {
     try {
       const surveyData = JSON.parse(surveyDataString);
-      const harmLevel = surveyData.harmLevel || 0;
-      const calculatedProgress = Math.max(0, 100 - harmLevel);
+      
+      // Новая система: считаем проценты из всех отчётов
+      const allReportsKey = `lenvpen_all_reports_${user.telegram_id}`;
+      const allReports = JSON.parse(localStorage.getItem(allReportsKey) || '[]');
+      
+      // Суммируем score из всех отчётов
+      const totalScore = allReports.reduce((sum, report) => sum + (report.score || 0), 0);
+      const calculatedProgress = Math.min(100, Math.max(0, totalScore));
       setProgress(calculatedProgress);
       
       const deps = surveyData.dependencies || [];
@@ -60,53 +64,23 @@ function DashboardClean() {
       const now = new Date();
       const daysInactive = lastVisit ? Math.floor((now - new Date(lastVisit)) / (1000 * 60 * 60 * 24)) : 0;
       
-      const today = new Date().toDateString();
-      const todayTasks = JSON.parse(localStorage.getItem(`lenvpen_daily_tasks_${user.telegram_id}_${today}`) || '{}');
-      const tasksCompletedToday = todayTasks.completed || 0;
-      
-      const streakData = JSON.parse(localStorage.getItem(`lenvpen_streak_${user.telegram_id}`) || '{"count": 0}');
-      
-      const userData = {
-        progress: calculatedProgress,
-        daysInactive,
-        tasksCompletedToday,
-        streak: streakData.count || 0
-      };
-      
-      // Определяем тон и получаем фразу
-      const tone = determineTone(userData);
-      const smartPhrase = getPhraseByTone(tone);
-      
-      setSlothComment(smartPhrase);
-      
-      // БЛОК F: Проверяем достижения
-      const unlockedAchievements = localStorage.getItem(`lenvpen_achievements_${user.telegram_id}`);
-      const previousAchievements = unlockedAchievements ? JSON.parse(unlockedAchievements) : [];
-      const newlyUnlocked = checkAchievements(userData, previousAchievements);
-      
-      if (newlyUnlocked.length > 0) {
-        const updated = [...previousAchievements, ...newlyUnlocked.map(a => a.id)];
-        localStorage.setItem(`lenvpen_achievements_${user.telegram_id}`, JSON.stringify(updated));
-        setNewAchievements(newlyUnlocked);
-      }
-      
-      // БЛОК F: Показываем бабл через 2 секунды
-      setTimeout(() => {
-        const bubble = getRandomBubble();
-        setBubbleMessage(bubble);
-        setShowBubble(true);
-      }, 2000);
-      
-      // БЛОК D6: Загружаем последний отчёт для обновления прогресса
-      const todayReportKey = `lenvpen_daily_report_${user.telegram_id}_${today}`;
+      // Определяем фразу ленивца на основе последнего отчёта
+      const today = new Date().toISOString().split('T')[0];
+      const todayReportKey = `lenvpen_report_${user.telegram_id}_${today}`;
       const todayReport = localStorage.getItem(todayReportKey);
+      
       if (todayReport) {
         const report = JSON.parse(todayReport);
-        if (report.analysis && report.analysis.goalImpact) {
-          // Обновляем прогресс на основе отчёта
-          const adjustedProgress = Math.min(100, Math.max(0, calculatedProgress + report.analysis.goalImpact));
-          setProgress(adjustedProgress);
+        const score = report.score || 0;
+        if (score >= 5) {
+          setSlothComment('Так! Я снова оживаю! Продолжай!');
+        } else if (score >= 0) {
+          setSlothComment('Неплохо. Двигаемся дальше.');
+        } else {
+          setSlothComment('Ну вот… а я надеялся на лучший день 😿');
         }
+      } else {
+        setSlothComment('Заполни отчёт дня, чтобы я увидел прогресс!');
       }
       
       // Сохраняем время визита
@@ -136,133 +110,63 @@ function DashboardClean() {
 
   const currentStage = getSlothStage(progress);
 
-  return (
-    <div className="min-h-screen bg-lenvpen-dark flex flex-col">
-      
-      {/* ═══ ВЕРХНЕЕ МЕНЮ ═══ */}
-      <div className="bg-lenvpen-card border-b border-lenvpen-orange/20 py-3 px-4">
-        <div className="flex gap-3 overflow-x-auto">
-          <button 
-            onClick={() => navigate('/analytics')}
-            className="flex-shrink-0 px-4 py-2 bg-lenvpen-bg rounded-lg text-lenvpen-text hover:bg-lenvpen-orange/20 transition-colors flex items-center gap-2"
-          >
-            <span className="text-xl">🧠</span>
-            <span className="text-sm">Аналитика</span>
-          </button>
-          <button 
-            onClick={() => navigate('/daily-tasks')}
-            className="flex-shrink-0 px-4 py-2 bg-lenvpen-bg rounded-lg text-lenvpen-text hover:bg-lenvpen-orange/20 transition-colors flex items-center gap-2"
-          >
-            <span className="text-xl">✅</span>
-            <span className="text-sm">Задания</span>
-          </button>
-          <button 
-            onClick={() => navigate('/settings')}
-            className="flex-shrink-0 px-4 py-2 bg-lenvpen-bg rounded-lg text-lenvpen-text hover:bg-lenvpen-orange/20 transition-colors flex items-center gap-2"
-          >
-            <span className="text-xl">⚙️</span>
-            <span className="text-sm">Настройки</span>
-          </button>
-        </div>
-      </div>
+  const surveyData = JSON.parse(localStorage.getItem(`lenvpen_survey_${user.telegram_id}`) || '{}');
 
-      {/* ═══ ЦЕНТР - ЛЕНИВЕЦ ═══ */}
-      <div className="flex-1 flex items-center justify-center px-4 py-8">
-        <div className="text-center max-w-md w-full">
+  return (
+    <div className="min-h-screen bg-lenvpen-bg">
+      {/* Единая навигация T3 */}
+      <Navigation />
+      
+      {/* Контент с отступами для навигации */}
+      <div className="pt-20 pb-24 px-6">
+        <div className="max-w-2xl mx-auto">
           
-          {/* Круговой прогресс с ленивцем */}
-          <div className="relative inline-block mb-6">
-            <svg className="w-72 h-72 -rotate-90" viewBox="0 0 200 200">
-              <circle cx="100" cy="100" r="85" stroke="#2a2a2a" strokeWidth="6" fill="none" />
-              <circle
-                cx="100"
-                cy="100"
-                r="85"
-                stroke="#f97316"
-                strokeWidth="6"
-                fill="none"
-                strokeLinecap="round"
-                strokeDasharray={`${2 * Math.PI * 85}`}
-                strokeDashoffset={`${2 * Math.PI * 85 * (1 - progress / 100)}`}
-                className="transition-all duration-1000"
-              />
-            </svg>
+          {/* Компактный ленивец с процентом внутри */}
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-48 h-48 rounded-full bg-lenvpen-card/80 border-4 border-lenvpen-accent/50 flex flex-col items-center justify-center shadow-2xl shadow-lenvpen-accent/40 relative overflow-hidden mb-6">
+              <div className="absolute inset-0 bg-lenvpen-accent/10"></div>
+              <div className="text-6xl relative z-10 mb-2">{currentStage.emoji}</div>
+              <div className="relative z-10 text-center">
+                <div className="text-4xl font-black text-lenvpen-accent">
+                  {Math.round(progress)}%
+                </div>
+                <div className="text-xs text-lenvpen-muted uppercase tracking-wide mt-1">
+                  Уровень {currentStage.level}
+                </div>
+              </div>
+            </div>
             
-            {/* Ленивец */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-8xl mb-2">🦥</div>
-                <div className="text-xs text-lenvpen-muted uppercase">
-                  Lv.{currentStage.level}
+            {/* Главная цель и дни */}
+            <div className="w-full max-w-md">
+              <div className="bg-lenvpen-card/50 backdrop-blur-sm rounded-2xl p-5 border border-lenvpen-accent/30">
+                <div className="text-xs text-lenvpen-muted uppercase tracking-wide mb-2">Главная цель</div>
+                <p className="text-lenvpen-text text-lg font-semibold leading-tight">
+                  {surveyData?.mainGoal || 'Цель не указана'}
+                </p>
+                <div className="mt-4 pt-4 border-t border-lenvpen-border/30">
+                  <div className="text-3xl font-bold text-lenvpen-accent">
+                    {surveyData?.goalDays || 90}
+                  </div>
+                  <div className="text-sm text-lenvpen-muted mt-1">дней до цели</div>
                 </div>
               </div>
             </div>
           </div>
           
-          {/* Прогресс */}
-          <div className="mb-6">
-            <div className="text-6xl font-black text-lenvpen-orange mb-2">
-              {Math.round(progress)}%
-            </div>
-            <div className="text-sm text-lenvpen-muted">
-              Общий прогресс
-            </div>
-          </div>
-          
-          {/* Комментарий */}
-          <div className="bg-lenvpen-card rounded-xl p-4 border border-lenvpen-orange/20">
-            <p className="text-lenvpen-text text-sm italic">
+          {/* Реакция ленивца */}
+          <div className="bg-lenvpen-card/50 rounded-2xl p-6 border border-lenvpen-border mb-6">
+            <p className="text-lenvpen-text italic text-center">
               "{slothComment}"
             </p>
           </div>
           
         </div>
       </div>
-
-      {/* ═══ НИЖНИЕ КНОПКИ ═══ */}
-      <div className="bg-lenvpen-card border-t border-lenvpen-orange/20 p-4">
-        <div className="max-w-md mx-auto space-y-3">
-          <button
-            onClick={() => navigate('/daily-tasks')}
-            className="w-full bg-lenvpen-orange text-white py-4 rounded-xl font-bold text-lg hover:bg-lenvpen-red transition-colors flex items-center justify-center gap-3"
-          >
-            <span className="text-2xl">✅</span>
-            <span>Задания дня</span>
-          </button>
-          
-          <button
-            onClick={() => navigate('/daily-report')}
-            className="w-full bg-gradient-to-r from-lenvpen-green to-lenvpen-orange text-white py-4 rounded-xl font-bold text-lg hover:from-lenvpen-orange hover:to-lenvpen-green transition-colors flex items-center justify-center gap-3"
-          >
-            <span className="text-2xl">📋</span>
-            <span>Отчёт дня</span>
-          </button>
-          
-          <button
-            onClick={() => navigate('/analytics')}
-            className="w-full bg-lenvpen-bg text-lenvpen-text py-4 rounded-xl font-semibold border border-lenvpen-orange/30 hover:bg-lenvpen-orange/10 transition-colors flex items-center justify-center gap-3"
-          >
-            <span className="text-2xl">📊</span>
-            <span>{dependencies.length} зависимостей</span>
-          </button>
-        </div>
-      </div>
-
+      
       {/* Версия */}
-      <div className="text-center py-2">
-        <span className="text-lenvpen-text/30 text-xs">v{APP_VERSION}</span>
+      <div className="fixed bottom-20 right-4 z-10">
+        <span className="text-lenvpen-text/20 text-xs">v{APP_VERSION}</span>
       </div>
-      
-      {/* БЛОК F: Бабл-уведомления */}
-      <BubbleNotification 
-        show={showBubble}
-        message={bubbleMessage}
-        onClose={() => setShowBubble(false)}
-      />
-      
-      {/* БЛОК F: Достижения */}
-      <AchievementManager achievements={newAchievements} />
-      
     </div>
   );
 }
