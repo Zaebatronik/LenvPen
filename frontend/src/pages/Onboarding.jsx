@@ -12,72 +12,101 @@ function Onboarding() {
   
   const screens = [
     {
-      title: 'Добро пожаловать! Вот как всё работает 👇',
+      title: 'Как работает система',
       content: (
-        <div className="space-y-6">
-          <div className="bg-lenvpen-orange/10 rounded-xl p-6 border-2 border-lenvpen-orange">
-            <h3 className="text-xl font-bold text-lenvpen-orange mb-3">
-              Ваш главный показатель — Процент Силы Лени⁺
+        <div className="space-y-8">
+          <div className="bg-lenvpen-card/50 rounded-2xl p-6 border border-lenvpen-border/30">
+            <h3 className="text-2xl font-bold text-lenvpen-text mb-4">
+              Процент Силы Лени⁺
             </h3>
-            <p className="text-lenvpen-text leading-relaxed">
-              Это не про то, насколько вы ленивы — это про то, <span className="font-bold text-lenvpen-orange">сколько у вас ресурсов, ясности и контроля</span> над собой, чтобы дойти до цели.
+            <p className="text-lenvpen-text/80 leading-relaxed text-lg">
+              Главный показатель вашего прогресса. Отражает уровень ресурсов, ясности и контроля над собой для достижения цели.
             </p>
           </div>
           
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold text-lenvpen-text">
-              Система считает ваш % на основе:
+            <h4 className="text-lg font-semibold text-lenvpen-text/60 uppercase tracking-wide text-sm">
+              Расчёт процента
             </h4>
             
             <div className="space-y-3">
-              <div className="flex items-start gap-3 bg-lenvpen-card p-4 rounded-lg">
-                <span className="text-2xl">🎯</span>
-                <div>
-                  <div className="font-semibold text-lenvpen-text">Выбранных зависимостей</div>
-                  <div className="text-sm text-lenvpen-muted">курение, алкоголь, сладкое и т.д.</div>
+              <div className="bg-lenvpen-card/30 border border-lenvpen-border/20 p-5 rounded-xl hover:bg-lenvpen-card/50 transition-colors">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-lenvpen-orange/10 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-lenvpen-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-lenvpen-text mb-1">Выбранные зависимости</div>
+                    <div className="text-sm text-lenvpen-muted">Курение, алкоголь, сладкое и другие привычки</div>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex items-start gap-3 bg-lenvpen-card p-4 rounded-lg">
-                <span className="text-2xl">⚠️</span>
-                <div>
-                  <div className="font-semibold text-lenvpen-text">Уровня их вреда</div>
-                  <div className="text-sm text-lenvpen-muted">насколько сильно они влияют</div>
+              <div className="bg-lenvpen-card/30 border border-lenvpen-border/20 p-5 rounded-xl hover:bg-lenvpen-card/50 transition-colors">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-lenvpen-red/10 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-lenvpen-red" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-lenvpen-text mb-1">Уровень вреда</div>
+                    <div className="text-sm text-lenvpen-muted">Степень влияния на ваш прогресс</div>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex items-start gap-3 bg-lenvpen-card p-4 rounded-lg">
-                <span className="text-2xl">💪</span>
-                <div>
-                  <div className="font-semibold text-lenvpen-text">Вашей активности</div>
-                  <div className="text-sm text-lenvpen-muted">спорт, работа, учёба, хорошие привычки</div>
+              <div className="bg-lenvpen-card/30 border border-lenvpen-border/20 p-5 rounded-xl hover:bg-lenvpen-card/50 transition-colors">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-lenvpen-green/10 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-lenvpen-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-lenvpen-text mb-1">Полезная активность</div>
+                    <div className="text-sm text-lenvpen-muted">Спорт, работа, обучение, привычки</div>
+                  </div>
                 </div>
               </div>
               
-              <div className="flex items-start gap-3 bg-lenvpen-card p-4 rounded-lg">
-                <span className="text-2xl">📝</span>
-                <div>
-                  <div className="font-semibold text-lenvpen-text">Ежедневных отметок</div>
-                  <div className="text-sm text-lenvpen-muted">«делал / не делал»</div>
+              <div className="bg-lenvpen-card/30 border border-lenvpen-border/20 p-5 rounded-xl hover:bg-lenvpen-card/50 transition-colors">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-lenvpen-orange/10 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-6 h-6 text-lenvpen-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="font-semibold text-lenvpen-text mb-1">Ежедневный учёт</div>
+                    <div className="text-sm text-lenvpen-muted">Отметки действий в дневнике</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           
-          <div className="bg-lenvpen-green/10 rounded-xl p-6 border-2 border-lenvpen-green">
-            <h4 className="text-lg font-bold text-lenvpen-green mb-3">Проще говоря:</h4>
-            <div className="space-y-2 text-lenvpen-text">
-              <div className="flex items-center gap-2">
-                <span className="text-lenvpen-green font-bold">↑</span>
-                <span>сделали что-то полезное → % растёт</span>
+          <div className="bg-gradient-to-br from-lenvpen-card/30 to-lenvpen-card/10 rounded-2xl p-6 border border-lenvpen-border/20">
+            <div className="space-y-3 text-lenvpen-text/90">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-lenvpen-green/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-lenvpen-green text-sm">↑</span>
+                </div>
+                <span>Полезные действия увеличивают процент</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-lenvpen-red font-bold">↓</span>
-                <span>сделали что-то вредное → % падает</span>
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-lenvpen-red/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-lenvpen-red text-sm">↓</span>
+                </div>
+                <span>Вредные привычки снижают процент</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-lenvpen-orange font-bold">⚖️</span>
-                <span>держите баланс → ленивец оживает и помогает вам идти дальше</span>
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-lenvpen-orange/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-lenvpen-orange text-sm">⚖</span>
+                </div>
+                <span>Баланс поддерживает стабильный прогресс</span>
               </div>
             </div>
           </div>
@@ -85,92 +114,111 @@ function Onboarding() {
       )
     },
     {
-      title: 'Зачем нужен этот процент?',
+      title: 'Уровни прогресса',
       content: (
         <div className="space-y-6">
-          <div className="space-y-4">
-            <div className="bg-lenvpen-red/20 rounded-xl p-5 border-2 border-lenvpen-red">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-3xl">😵</span>
-                <div className="text-2xl font-bold text-lenvpen-red">0% – 30%</div>
+          <div className="space-y-3">
+            <div className="bg-lenvpen-card/30 border-l-4 border-lenvpen-red/50 p-5 rounded-r-xl">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xl font-bold text-lenvpen-text">0% – 30%</div>
+                <div className="text-xs uppercase tracking-wide text-lenvpen-red/60 font-semibold">Критический</div>
               </div>
-              <p className="text-lenvpen-text">
-                Ваш ленивец еле жив… и ваша цель тоже 😅
+              <p className="text-lenvpen-text/70 text-sm">
+                Низкий уровень ресурсов. Требуется фокус на базовых изменениях
               </p>
             </div>
             
-            <div className="bg-lenvpen-orange/20 rounded-xl p-5 border-2 border-lenvpen-orange">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-3xl">🙂</span>
-                <div className="text-2xl font-bold text-lenvpen-orange">30% – 60%</div>
+            <div className="bg-lenvpen-card/30 border-l-4 border-lenvpen-orange/50 p-5 rounded-r-xl">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xl font-bold text-lenvpen-text">30% – 60%</div>
+                <div className="text-xs uppercase tracking-wide text-lenvpen-orange/60 font-semibold">Становление</div>
               </div>
-              <p className="text-lenvpen-text">
-                Вы становитесь стабильнее, сила растёт
+              <p className="text-lenvpen-text/70 text-sm">
+                Формирование стабильности. Прогресс становится заметным
               </p>
             </div>
             
-            <div className="bg-lenvpen-green/20 rounded-xl p-5 border-2 border-lenvpen-green">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-3xl">😎</span>
-                <div className="text-2xl font-bold text-lenvpen-green">60% – 90%</div>
+            <div className="bg-lenvpen-card/30 border-l-4 border-lenvpen-green/50 p-5 rounded-r-xl">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xl font-bold text-lenvpen-text">60% – 90%</div>
+                <div className="text-xs uppercase tracking-wide text-lenvpen-green/60 font-semibold">Уверенность</div>
               </div>
-              <p className="text-lenvpen-text">
-                Вы уверенно движетесь к своей цели
+              <p className="text-lenvpen-text/70 text-sm">
+                Устойчивое движение к цели. Контроль над привычками
               </p>
             </div>
             
-            <div className="bg-gradient-to-r from-lenvpen-orange to-lenvpen-red p-5 rounded-xl border-2 border-lenvpen-orange">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-3xl">🔥</span>
-                <div className="text-2xl font-bold text-white">90% – 100%</div>
+            <div className="bg-gradient-to-r from-lenvpen-orange/10 to-lenvpen-red/10 border border-lenvpen-orange/30 p-5 rounded-xl">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xl font-bold text-lenvpen-orange">90% – 100%</div>
+                <div className="text-xs uppercase tracking-wide text-lenvpen-orange/80 font-semibold">Мастерство</div>
               </div>
-              <p className="text-white font-semibold">
-                Вы почти у вершины и идёте на полном заряде
+              <p className="text-lenvpen-text/70 text-sm">
+                Максимальная эффективность. Цель практически достигнута
               </p>
             </div>
           </div>
           
-          <div className="bg-gradient-to-br from-lenvpen-orange/10 to-lenvpen-red/10 rounded-xl p-6 border-2 border-lenvpen-orange">
-            <h3 className="text-xl font-bold text-lenvpen-orange mb-4">
-              🎯 Что происходит при 100%?
+          <div className="bg-lenvpen-card/50 rounded-2xl p-6 border border-lenvpen-border/30">
+            <h3 className="text-lg font-bold text-lenvpen-text mb-4">
+              Что означает 100%
             </h3>
             
-            <div className="bg-lenvpen-bg rounded-lg p-4 mb-4">
-              <p className="text-lenvpen-text text-lg font-semibold mb-2">
-                При достижении 100% в 99% случаев вы достигаете своей цели
+            <div className="bg-lenvpen-dark/50 rounded-xl p-5 mb-4 border border-lenvpen-border/20">
+              <p className="text-lenvpen-text/90 leading-relaxed">
+                При достижении 100% вероятность реализации цели составляет 99%
               </p>
-              <p className="text-sm text-lenvpen-muted">
-                (если ваша цель — не «стану космонавтом за неделю» 🤝🚀)
+              <p className="text-xs text-lenvpen-muted mt-2">
+                *при условии реалистичности и измеримости цели
               </p>
             </div>
             
-            <div className="space-y-2 text-lenvpen-text">
-              <div className="text-lg font-bold text-lenvpen-orange mb-2">100% =</div>
-              <div className="flex items-center gap-2">
-                <span className="text-lenvpen-green">✓</span>
-                <span>вы дисциплинированы</span>
+            <div className="space-y-2.5 text-sm text-lenvpen-text/80">
+              <div className="flex items-start gap-3">
+                <div className="w-5 h-5 rounded bg-lenvpen-green/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-3 h-3 text-lenvpen-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span>Высокая дисциплина</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-lenvpen-green">✓</span>
-                <span>зависимости под контролем</span>
+              <div className="flex items-start gap-3">
+                <div className="w-5 h-5 rounded bg-lenvpen-green/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-3 h-3 text-lenvpen-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span>Контроль зависимостей</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-lenvpen-green">✓</span>
-                <span>полезные действия стабильны</span>
+              <div className="flex items-start gap-3">
+                <div className="w-5 h-5 rounded bg-lenvpen-green/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-3 h-3 text-lenvpen-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span>Стабильность полезных действий</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-lenvpen-green">✓</span>
-                <span>привычки закрепляются</span>
+              <div className="flex items-start gap-3">
+                <div className="w-5 h-5 rounded bg-lenvpen-green/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-3 h-3 text-lenvpen-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span>Закреплённые привычки</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-lenvpen-green">✓</span>
-                <span>прогресс становится естественным</span>
+              <div className="flex items-start gap-3">
+                <div className="w-5 h-5 rounded bg-lenvpen-green/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <svg className="w-3 h-3 text-lenvpen-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span>Естественный прогресс</span>
               </div>
             </div>
             
-            <div className="mt-4 bg-lenvpen-card rounded-lg p-4">
-              <p className="text-lenvpen-text italic">
-                Это та точка, где <span className="font-bold text-lenvpen-orange">вы уже другой человек</span> — и цель становится <span className="font-bold text-lenvpen-green">неизбежным результатом</span>.
+            <div className="mt-5 pt-5 border-t border-lenvpen-border/20">
+              <p className="text-lenvpen-text/60 text-sm leading-relaxed">
+                100% означает трансформацию личности. В этой точке достижение цели становится закономерным результатом ваших изменений.
               </p>
             </div>
           </div>
@@ -178,83 +226,102 @@ function Onboarding() {
       )
     },
     {
-      title: 'Что делать дальше?',
+      title: 'Начало работы',
       content: (
         <div className="space-y-6">
-          <div className="space-y-4">
-            <div className="bg-lenvpen-card rounded-xl p-5 border-l-4 border-lenvpen-orange">
-              <div className="flex items-start gap-3">
-                <span className="text-3xl">1️⃣</span>
-                <div>
-                  <h4 className="text-lg font-bold text-lenvpen-text mb-1">Выберите свои зависимости</h4>
-                  <p className="text-sm text-lenvpen-muted">
-                    Честно отметьте, что мешает вам двигаться к цели
+          <div className="space-y-3">
+            <div className="bg-lenvpen-card/30 border border-lenvpen-border/20 rounded-xl p-5 hover:bg-lenvpen-card/50 transition-colors">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-lenvpen-orange/10 flex items-center justify-center flex-shrink-0">
+                  <span className="text-lenvpen-orange font-bold text-lg">1</span>
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-base font-semibold text-lenvpen-text mb-1">Выбор зависимостей</h4>
+                  <p className="text-sm text-lenvpen-muted leading-relaxed">
+                    Определите привычки, которые препятствуют достижению цели
                   </p>
                 </div>
               </div>
             </div>
             
-            <div className="bg-lenvpen-card rounded-xl p-5 border-l-4 border-lenvpen-orange">
-              <div className="flex items-start gap-3">
-                <span className="text-3xl">2️⃣</span>
-                <div>
-                  <h4 className="text-lg font-bold text-lenvpen-text mb-1">Отметьте цель</h4>
-                  <p className="text-sm text-lenvpen-muted">
-                    Куда вы идёте? Чего хотите достичь?
+            <div className="bg-lenvpen-card/30 border border-lenvpen-border/20 rounded-xl p-5 hover:bg-lenvpen-card/50 transition-colors">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-lenvpen-orange/10 flex items-center justify-center flex-shrink-0">
+                  <span className="text-lenvpen-orange font-bold text-lg">2</span>
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-base font-semibold text-lenvpen-text mb-1">Постановка цели</h4>
+                  <p className="text-sm text-lenvpen-muted leading-relaxed">
+                    Сформулируйте конкретный и измеримый результат
                   </p>
                 </div>
               </div>
             </div>
             
-            <div className="bg-lenvpen-card rounded-xl p-5 border-l-4 border-lenvpen-orange">
-              <div className="flex items-start gap-3">
-                <span className="text-3xl">3️⃣</span>
-                <div>
-                  <h4 className="text-lg font-bold text-lenvpen-text mb-1">Каждый вечер отмечайте день</h4>
-                  <div className="space-y-1 text-sm text-lenvpen-muted mt-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lenvpen-red">↓</span>
-                      <span>вредные действия → % падает</span>
+            <div className="bg-lenvpen-card/30 border border-lenvpen-border/20 rounded-xl p-5 hover:bg-lenvpen-card/50 transition-colors">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-lenvpen-orange/10 flex items-center justify-center flex-shrink-0">
+                  <span className="text-lenvpen-orange font-bold text-lg">3</span>
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-base font-semibold text-lenvpen-text mb-1">Ежедневный учёт</h4>
+                  <p className="text-sm text-lenvpen-muted leading-relaxed mb-3">
+                    Фиксируйте полезные и вредные действия каждый день
+                  </p>
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex items-center gap-2 text-lenvpen-text/60">
+                      <div className="w-1 h-1 rounded-full bg-lenvpen-green"></div>
+                      <span>Полезные действия повышают процент</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-lenvpen-green">↑</span>
-                      <span>полезные действия → % растёт</span>
+                    <div className="flex items-center gap-2 text-lenvpen-text/60">
+                      <div className="w-1 h-1 rounded-full bg-lenvpen-red"></div>
+                      <span>Вредные привычки снижают процент</span>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             
-            <div className="bg-lenvpen-card rounded-xl p-5 border-l-4 border-lenvpen-orange">
-              <div className="flex items-start gap-3">
-                <span className="text-3xl">4️⃣</span>
-                <div>
-                  <h4 className="text-lg font-bold text-lenvpen-text mb-1">Следите за ленивцем в центре экрана</h4>
-                  <p className="text-sm text-lenvpen-muted">
-                    Он показывает ваше состояние лучше любых цифр
+            <div className="bg-lenvpen-card/30 border border-lenvpen-border/20 rounded-xl p-5 hover:bg-lenvpen-card/50 transition-colors">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-lenvpen-orange/10 flex items-center justify-center flex-shrink-0">
+                  <span className="text-lenvpen-orange font-bold text-lg">4</span>
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-base font-semibold text-lenvpen-text mb-1">Отслеживание прогресса</h4>
+                  <p className="text-sm text-lenvpen-muted leading-relaxed">
+                    Визуальный индикатор отражает ваш текущий уровень
                   </p>
                 </div>
               </div>
             </div>
           </div>
           
-          <div className="bg-gradient-to-br from-lenvpen-orange/10 to-lenvpen-red/10 rounded-xl p-6 border-2 border-lenvpen-orange">
-            <div className="text-center space-y-3">
-              <div className="text-6xl mb-2">🦥</div>
-              <h3 className="text-xl font-bold text-lenvpen-orange">И всё!</h3>
-              <p className="text-lenvpen-text leading-relaxed">
-                Система сама ведёт вас к результату.
-              </p>
-              <p className="text-lenvpen-text font-semibold">
-                Ваше дело — просто прожить один день честно и поставить пару галочек.
-              </p>
+          <div className="bg-lenvpen-card/50 rounded-2xl p-6 border border-lenvpen-border/30">
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 mx-auto rounded-2xl bg-lenvpen-orange/10 flex items-center justify-center">
+                <svg className="w-8 h-8 text-lenvpen-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-lenvpen-text mb-2">Автоматизированная система</h3>
+                <p className="text-lenvpen-text/70 text-sm leading-relaxed">
+                  Алгоритм рассчитывает оптимальный путь на основе ваших данных. Требуется только ежедневная фиксация действий.
+                </p>
+              </div>
             </div>
           </div>
           
-          <div className="bg-lenvpen-green/10 rounded-lg p-4 border border-lenvpen-green">
-            <p className="text-center text-lenvpen-text text-sm">
-              💡 <span className="font-semibold">Совет:</span> Не гонитесь за 100% сразу. Даже +1% каждый день через месяц даст вам +30%. А это уже <span className="text-lenvpen-green font-bold">огромный прогресс</span>.
-            </p>
+          <div className="bg-lenvpen-dark/50 rounded-xl p-5 border border-lenvpen-border/20">
+            <div className="flex items-start gap-3">
+              <svg className="w-5 h-5 text-lenvpen-orange flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-lenvpen-text/60 text-xs leading-relaxed">
+                <span className="font-semibold text-lenvpen-text/80">Рекомендация:</span> Стабильный прирост +1% ежедневно даёт +30% за месяц. Фокус на постоянстве эффективнее резких скачков.
+              </p>
+            </div>
           </div>
         </div>
       )
@@ -284,37 +351,39 @@ function Onboarding() {
   
   return (
     <div className="min-h-screen bg-lenvpen-dark flex flex-col">
-      {/* Progress dots */}
-      <div className="sticky top-0 bg-lenvpen-dark/95 backdrop-blur-md border-b border-lenvpen-border/50 z-20">
-        <div className="max-w-2xl mx-auto px-4 py-4">
+      {/* Progress header */}
+      <div className="sticky top-0 bg-lenvpen-dark/98 backdrop-blur-xl border-b border-lenvpen-border/30 z-20">
+        <div className="max-w-2xl mx-auto px-6 py-5">
           <div className="flex items-center justify-between">
             <button
               onClick={handleSkip}
-              className="text-lenvpen-muted hover:text-lenvpen-text transition-colors text-sm"
+              className="text-lenvpen-muted hover:text-lenvpen-text transition-colors text-sm font-medium"
             >
               Пропустить
             </button>
-            <div className="flex gap-2">
+            <div className="flex gap-2.5">
               {[1, 2, 3].map(dot => (
                 <div
                   key={dot}
-                  className={`w-2 h-2 rounded-full transition-all ${
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
                     dot === currentScreen
-                      ? 'bg-lenvpen-orange w-8'
-                      : 'bg-lenvpen-border'
+                      ? 'bg-lenvpen-orange w-12'
+                      : dot < currentScreen
+                      ? 'bg-lenvpen-orange/40 w-8'
+                      : 'bg-lenvpen-border/50 w-8'
                   }`}
                 />
               ))}
             </div>
-            <div className="w-20"></div>
+            <div className="text-xs text-lenvpen-muted font-medium">{currentScreen}/3</div>
           </div>
         </div>
       </div>
       
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-2xl mx-auto px-4 py-6">
-          <h1 className="text-2xl font-bold text-lenvpen-text mb-6">
+        <div className="max-w-2xl mx-auto px-6 py-8">
+          <h1 className="text-2xl font-bold text-lenvpen-text mb-8 tracking-tight">
             {screens[currentScreen - 1].title}
           </h1>
           
@@ -323,28 +392,28 @@ function Onboarding() {
       </div>
       
       {/* Navigation */}
-      <div className="sticky bottom-0 bg-lenvpen-card border-t border-lenvpen-border p-4">
+      <div className="sticky bottom-0 bg-lenvpen-dark/98 backdrop-blur-xl border-t border-lenvpen-border/30 p-6">
         <div className="max-w-2xl mx-auto flex gap-3">
           {currentScreen > 1 && (
             <button
               onClick={() => setCurrentScreen(currentScreen - 1)}
-              className="btn-secondary flex-1"
+              className="flex-1 py-3.5 px-6 rounded-xl font-semibold transition-all bg-lenvpen-card/50 text-lenvpen-text border border-lenvpen-border/30 hover:bg-lenvpen-card/80 hover:border-lenvpen-border/50"
             >
               ← Назад
             </button>
           )}
           <button
             onClick={handleNext}
-            className="btn-primary flex-1"
+            className="flex-1 py-3.5 px-6 rounded-xl font-semibold transition-all bg-gradient-to-r from-lenvpen-orange to-lenvpen-red text-white hover:shadow-lg hover:shadow-lenvpen-orange/20"
           >
-            {currentScreen === 3 ? 'Начать!' : 'Далее →'}
+            {currentScreen === 3 ? 'Начать работу' : 'Далее →'}
           </button>
         </div>
       </div>
       
       {/* Version */}
-      <div className="text-center py-2">
-        <span className="text-lenvpen-text/30 text-xs">v{APP_VERSION}</span>
+      <div className="text-center py-3 bg-lenvpen-dark">
+        <span className="text-lenvpen-text/20 text-xs font-medium">v{APP_VERSION}</span>
       </div>
     </div>
   );
